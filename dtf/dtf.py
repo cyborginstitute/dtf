@@ -18,7 +18,8 @@
 import yaml
 
 # internal imports
-from utils import expand_tree, get_test_name, get_tests
+from utils import expand_tree, get_test_name,
+from tests import TestDefinitions
 
 def read_files(test_paths):
     tests = {}
@@ -38,12 +39,14 @@ def run_tests(tests, case_types):
 
 def main():
     case_paths = ['cases/']
-    case_types = get_tests(case_paths)
+
+    testdefs = TestDefinitions(case_paths)
+    testdefs.get_all_tests()
 
     test_paths = [ 'tests/' ]
     tests = read_files(test_paths)
 
-    run_tests(tests, case_types)
+    run_tests(tests, testdefs.tests)
 
 if __name__ == '__main__':
     main()
