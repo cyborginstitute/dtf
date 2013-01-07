@@ -15,6 +15,7 @@
 from utils import get_test_name, expand_tree
 from importlib import import_module
 import sys
+import os
 
 class TestDefinitions(object):
     def __init__(self, case_paths):

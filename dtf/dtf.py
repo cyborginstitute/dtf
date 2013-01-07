@@ -18,24 +18,47 @@
 import yaml
 
 # internal imports
-from utils import expand_tree, get_test_name,
+from utils import expand_tree, get_test_name
 from tests import TestDefinitions
 
-def read_files(test_paths):
-    tests = {}
-    for path in test_paths:
-        for test in expand_tree(path):
+class TestRunner(object):
+    def __init__(self, test_paths):
+        self.test_paths = test_paths
+        self.test_specs = {}
+
+    def load_all_tests(self):
+        for path in self.test_paths:
+            for test in expand_tree(path):
+                with open(test) as f:
+                    self.test_specs.update( { get_test_name(test): yaml.load(f) } )
+
+    def load_test(self, test):
+        if test in self.test_specs:
+            pass
+        else:
             with open(test) as f:
-                tests.update( { get_test_name(test): yaml.load(f) } )
+                self.test_specs.update( { get_test_name(test): yaml.load(f) } )
 
-    return tests
+    def run_all(self, definitions):
+        for test in self.test_specs:
+            case = self.test_specs[test]
 
-def run_tests(tests, case_types):
-    for test in tests:
-        case = tests[test]
+            self.run(test, case, definitions.get(case['type']))
 
-        if case['type'] in case_types:
-            case_types[case['type']](case, test)
+    @staticmethod
+    def run(test, case, func=None):
+        if func is None:
+            tdfns = TestDefinitions(['./'])
+            tdfns.get_all_tests()
+
+            test_type = case['type']
+            if test_type in tdfns.tests:
+                func = tdfns.tests.get(test_type)
+                func(case, test)
+            else:
+                Exception('ERROR: case named "%s" with non-extant type "%s"' % (test, test_type))
+        else:
+            func(case, test)
 
 def main():
     case_paths = ['cases/']
@@ -44,9 +67,10 @@ def main():
     testdefs.get_all_tests()
 
     test_paths = [ 'tests/' ]
-    tests = read_files(test_paths)
 
-    run_tests(tests, testdefs.tests)
+    t = TestRunner( test_paths )
+    t.load_all_tests()
+    t.run_all(testdefs.tests)
 
 if __name__ == '__main__':
     main()
