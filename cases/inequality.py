@@ -14,7 +14,7 @@ class DtfInequality(DtfCase):
         return r, result
 
     def run(self):
-        print(self.validate()[1])
+        self.validate()
 
         t = self.test(self.case['value0'], self.case['value1'])
         self.response(t[0], t[1])

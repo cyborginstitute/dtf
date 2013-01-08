@@ -24,7 +24,6 @@ def validate_keys(keys, case, name):
     for key in keys:
         if case.has_key(key) is False:
             return False
-
     return True
 
 class DtfCase(object):
@@ -37,19 +36,13 @@ class DtfCase(object):
         for key in keys:
             self.keys.append(key)
 
-    def _safe_response(self, outcome=True, msg=None, fatal=False):
+    def _safe_response(self, outcome=True, msg=None, verbose=False, fatal=False):
         if msg is None:
             raise Exception('No response messages specified')
 
-        if outcome is True: 
-            return (True, msg[0]) 
-        elif outcome is False: 
-            if fatal is True: 
-                raise Exception(msg[1])
-            else: 
-                return (False, msg[0])
+        self.response(outcome, msg, verbose=verbose, fatal=fatal)
 
-    def validate(self, keys=None, case=None, fatal=False):
+    def validate(self, keys=None, case=None, verbose=False, fatal=False):
         if case is None:
             case = self.case
 
@@ -58,12 +51,16 @@ class DtfCase(object):
         else: 
             keys = self.keys
 
-        msg = (('[%s]: "%s" is a valid "%s" test case.' 
-                % (self.name, self.case['name'], self.case['type'])),
-               ('[%s]: "%s" is not a valid "%s" test case.'
-                % (self.name, self.case['name'], self.case['type'])))
-    
-        return self._safe_response(validate_keys(keys, case, self.name), msg=msg, fatal=fatal)
+        t = validate_keys(keys, case,self.name)
+
+        if t is True:
+            msg = ('[%s]: "%s" is a valid "%s" test case.'
+                   % (self.name, self.case['name'], self.case['type']))
+        elif t is False:
+            msg = ('[%s]: "%s" is not a valid "%s" test case.'
+                   % (self.name, self.case['name'], self.case['type']))
+
+        return self._safe_response(outcome=t, msg=msg, verbose=verbose, fatal=fatal)
 
     def dump(self, case, path, keys=None):
         if keys is not None:

@@ -2,7 +2,7 @@ from cases import DtfCase
 
 class DtfEquality(DtfCase):
     def run(self):
-        print(self.validate()[1])
+        self.validate()
 
         if self.case['value0'] == self.case['value1']:
             r = True
