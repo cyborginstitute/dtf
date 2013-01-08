@@ -36,12 +36,6 @@ class DtfCase(object):
         for key in keys:
             self.keys.append(key)
 
-    def _safe_response(self, outcome=True, msg=None, verbose=False, fatal=False):
-        if msg is None:
-            raise Exception('No response messages specified')
-
-        self.response(outcome, msg, verbose=verbose, fatal=fatal)
-
     def validate(self, keys=None, case=None, verbose=False, fatal=False):
         if case is None:
             case = self.case
@@ -60,7 +54,7 @@ class DtfCase(object):
             msg = ('[%s]: "%s" is not a valid "%s" test case.'
                    % (self.name, self.case['name'], self.case['type']))
 
-        return self._safe_response(outcome=t, msg=msg, verbose=verbose, fatal=fatal)
+        return self.response(result=t, msg=msg, verbose=verbose, fatal=fatal)
 
     def dump(self, case, path, keys=None):
         if keys is not None:
@@ -83,10 +77,3 @@ class DtfCase(object):
 
     def run(self):
         raise DtfNotImplemented('test cases must implement run methods.')
-
-if __name__ == '__main__':
-    tdict = { 'a': 1, 'b': 2, 'name': 'what', 'type': 'fox', 'extra': None}
-    keys = [ 'a', 'b', 'name', 'type' ]
-    case = DtfCase('bar', tdict)
-    # case.dump(tdict, 'foo',  keys)
-    assert(case.validate(keys)[0] is True)
