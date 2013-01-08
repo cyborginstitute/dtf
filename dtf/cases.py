@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import yaml
+
 class DtfException(Exception):
     pass
 
@@ -26,22 +28,58 @@ def validate_keys(keys, case, name):
     return True
 
 class DtfCase(object):
-    def __init__(self, case, name):
+    def __init__(self,name, case):
         self.case = case
         self.name = name
+        self.keys = []
 
-    def validate(self, keys):
-        valid = validate_keys(keys, self.case, self.name)
-        if valid is True:
-            return (True, '[%s]: "%s" is a valid "%s" test case.'
-                                  % (self.name, self.case['name'], self.case['type']))
-        else:
-            return (False, '[%s]: "%s" is not a valid "%s" test case.'
-                            % (self.name, self.case['name'], self.case['type']))
+    def required_keys(self, keys):
+        for key in keys:
+            self.keys.append(key)
+
+    def _safe_response(self, outcome=True, msg=None, fatal=False):
+        if msg is None:
+            raise Exception('No response messages specified')
+
+        if outcome is True: 
+            return (True, msg[0]) 
+        elif outcome is False: 
+            if fatal is True: 
+                raise Exception(msg[1])
+            else: 
+                return (False, msg[0])
+
+    def validate(self, keys=None, case=None, fatal=False):
+        if case is None:
+            case = self.case
+
+        if keys is None and self.keys is False:
+            raise DtfException('must add required_keys to DtfCase subclasses.')
+        else: 
+            keys = self.keys
+
+        msg = (('[%s]: "%s" is a valid "%s" test case.' 
+                % (self.name, self.case['name'], self.case['type'])),
+               ('[%s]: "%s" is not a valid "%s" test case.'
+                % (self.name, self.case['name'], self.case['type'])))
+    
+        return self._safe_response(validate_keys(keys, case, self.name), msg=msg, fatal=fatal)
+
+    def dump(self, case, path, keys=None):
+        if keys is not None:
+            valid = self.validate(keys, case)
+            if valid[0] is False:
+                raise DtfException(valid[1])
+
+        with open(path, 'w') as f:
+            f.write(yaml.dump(case, default_flow_style=False))
 
     def run(self):
         raise DtfNotImplemented('test cases must implement run methods.')
 
 if __name__ == '__main__':
-    case = DtfCase( { 'a': 1, 'b': 2, 'name': 'what', 'type': 'fox', 'extra': None}, 'bar')
-    assert(case.validate([ 'a', 'b', 'name', 'type' ])[0] is True)
+    tdict = { 'a': 1, 'b': 2, 'name': 'what', 'type': 'fox', 'extra': None}
+    keys = [ 'a', 'b', 'name', 'type' ]
+    case = DtfCase('bar', tdict)
+    # case.dump(tdict, 'foo',  keys)
+    assert(case.validate(keys)[0] is True)
