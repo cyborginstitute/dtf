@@ -3,16 +3,21 @@ from cases import DtfCase
 class DtfInequality(DtfCase):
     def test(self, a, b):
         if a != b:
+            r = True
             result = ('[%s]: "%s" %s successful! %s does not equal %s'
                       % (self.name, self.case['name'], 'inequality test', a, b))
         else:
+            r = False
             result = ('[%s]: "%s" %s failed! %s equals %s'
                       % (self.name, self.case['name'], 'inequality test', a, b))
-        return result
+
+        return r, result
 
     def run(self):
         print(self.validate()[1])
-        print(self.test(self.case['value0'], self.case['value1']))
+
+        t = self.test(self.case['value0'], self.case['value1'])
+        self.response(t[0], t[1])
 
 def main(name, case):
     c = DtfInequality(name, case)

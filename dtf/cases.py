@@ -74,6 +74,16 @@ class DtfCase(object):
         with open(path, 'w') as f:
             f.write(yaml.dump(case, default_flow_style=False))
 
+    def response(self, result, msg, verbose=False, fatal=False):
+        if result is True and verbose is True: 
+            print(msg)
+        elif result is True and verbose is False:
+            pass
+        elif result is False and fatal is False:
+            print(msg)
+        elif result is False and fatal is True:
+            raise Exception(msg)
+
     def run(self):
         raise DtfNotImplemented('test cases must implement run methods.')
 
