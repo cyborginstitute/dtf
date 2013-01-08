@@ -42,10 +42,6 @@ class DtfCase(object):
     def run(self):
         raise DtfNotImplemented('test cases must implement run methods.')
 
-    def run_and_validate(self):
-        self.validate_case()
-        self.run()
-
 if __name__ == '__main__':
-    case = DtfCase( { 'a': 1, 'b': 2, 'name': 'what', 'type': 'fox'}, 'bar')
+    case = DtfCase( { 'a': 1, 'b': 2, 'name': 'what', 'type': 'fox', 'extra': None}, 'bar')
     assert(case.validate([ 'a', 'b', 'name', 'type' ])[0] is True)
