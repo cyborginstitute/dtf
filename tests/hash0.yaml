@@ -1,0 +1,11 @@
+name: 'first hashed test: both unchanged'
+type: paired
+file0:
+  name: 'first equality test'
+  path: tests/test0.yaml
+  hash: 634fb88ae48c80dfa32a04eaf6a25b09
+file1: 
+  name: 'second equality test'
+  path: tests/test1.yaml
+  hash: 3fbc8088a7851beb9b0496979a4cc23f
+...

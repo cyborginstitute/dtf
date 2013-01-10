@@ -1,9 +1,7 @@
 from cases import DtfCase
 
 class DtfEquality(DtfCase):
-    def run(self):
-        self.validate()
-
+    def test(self):
         if self.case['value0'] == self.case['value1']:
             r = True
             msg = ('[%s]: "%s" %s successful! %s equals %s'
@@ -13,12 +11,9 @@ class DtfEquality(DtfCase):
             msg = ('[%s]: "%s" %s failed! %s does not equal %s'
                    % (self.name, self.case['name'], 'equality test', self.case['value0'], self.case['value1']))
 
-        self.response(r, msg)
+        return r, msg
 
 def main(name, case):
     c = DtfEquality(name, case)
     c.required_keys(['name', 'type', 'value0', 'value1'])
     c.run()
-
-
-

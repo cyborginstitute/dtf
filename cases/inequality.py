@@ -1,7 +1,10 @@
 from cases import DtfCase
 
 class DtfInequality(DtfCase):
-    def test(self, a, b):
+    def test(self):
+        a=self.case['value0']
+        b=self.case['value1']
+
         if a != b:
             r = True
             result = ('[%s]: "%s" %s successful! %s does not equal %s'
@@ -12,12 +15,6 @@ class DtfInequality(DtfCase):
                       % (self.name, self.case['name'], 'inequality test', a, b))
 
         return r, result
-
-    def run(self):
-        self.validate()
-
-        t = self.test(self.case['value0'], self.case['value1'])
-        self.response(t[0], t[1])
 
 def main(name, case):
     c = DtfInequality(name, case)
