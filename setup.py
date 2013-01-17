@@ -11,7 +11,6 @@ setup(
     entry_points={
         'console_scripts': [
             'dtf = dtf.dtf:main',
-            'dtu = dtf.dtu:main',
             ],
         }
     )

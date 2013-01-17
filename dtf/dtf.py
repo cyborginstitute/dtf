@@ -23,11 +23,14 @@ import argparse
 
 def interface():
     parser = argparse.ArgumentParser("Document Testing Framework")
+
+    # options for running larger test suites.
     parser.add_argument('--casedir', '-c', action='append',
                         default=['cases/'], help='directory containing yaml test specs. you may specify multiple times.')
     parser.add_argument('--testdir', '-t', action='append',
                         default=['tests/'], help='directory containing corresponding test implementaitons.')
 
+    # options for single test running operation.
     parser.add_argument('--single', '-s', action='store_true',
                         default=False, help='specify to toggle "single" mode to only run one test.')
     parser.add_argument('--yamlcase', '-y', action='store',
@@ -35,12 +38,11 @@ def interface():
     parser.add_argument('--testdef', '-d', action='store',
                         default=None, help='in "single" mode, specify the path of the corresponding test implementation.')
 
+    # behavioral operations. some passed to tests.
     parser.add_argument('--verbose', '-v', action='store_true',
                         default=False, help='report all test activity. False by default.')
-
     parser.add_argument('--fatal', '-f', action='store_true',
                         default=False, help='terminate following first unsucessful test. False by default.')
-
     parser.add_argument('--passing', '-p', action='store_true',
                         default=False, help='return a passing document for failed tests.')
 
