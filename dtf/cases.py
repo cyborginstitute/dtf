@@ -14,6 +14,8 @@
 
 import yaml
 
+from dtf import VERBOSE, FATAL, PASSING
+
 class DtfException(Exception):
     pass
 
@@ -42,7 +44,7 @@ class DtfCase(object):
 
         if keys is None and self.keys is False:
             raise DtfException('must add required_keys to DtfCase subclasses.')
-        else: 
+        else:
             keys = self.keys
 
         t = validate_keys(keys, case,self.name)
@@ -75,11 +77,21 @@ class DtfCase(object):
         elif result is False and fatal is True:
             raise Exception(msg)
 
+    def passing(self):
+        raise NotImplemented()
+
+    def print_passing_spec(self):
+        if self.return_value is False:
+            print("# passing document for: " + self.name + ".yaml")
+            print(self.passing() + '...')
+
     def test(self):
         raise DtfNotImplemented('test cases must implement run methods.')
 
     def run(self):
-        self.validate()
+        self.validate(verbose=VERBOSE, fatal=FATAL)
+
         t = self.test()
         self.return_value = t[0]
-        self.response(t[0], t[1])
+
+        self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)

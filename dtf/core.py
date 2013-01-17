@@ -68,7 +68,7 @@ class TestDefinitions(object):
         elif name is False:
             raise Exception('ERROR: test named - ' + name + ' does not exist.')
 
-        path = os.path.dirname(f)
+        path = os.path.dirname(filename)
 
         if path is False:
             raise Exception('ERROR: test named - ' + name + ' does not exist.')
@@ -83,6 +83,7 @@ class TestRunner(object):
         self.test_paths = test_paths
         self.test_specs = {}
         self.cases = None
+        self.queue = []
 
     def definitions(self, definitions):
         self.cases = definitions
@@ -98,6 +99,9 @@ class TestRunner(object):
     def _run(self, name, func):
         func(name, self.test_specs[name])
 
+    def _add_to_queue(self, name, func):
+        self.queue.append((func, name, self.test_specs[name]))
+
     def load_all(self, path=None):
         if path is None:
             for p in self.test_paths:
@@ -111,15 +115,19 @@ class TestRunner(object):
         else:
             self._load(test)
 
-    def run_all(self, definitions=None):
+    def run_all(self, definitions=None, queue=False):
         if definitions is None and self.cases is None:
             raise Exception('Definitions not added to TestRunner Object.')
-        else:
+        elif definitions is None:
             definitions = self.cases
 
         for test in self.test_specs:
             case = self.test_specs[test]
-            self._run(test, self.cases.get(case['type']))
+
+            if queue is True: 
+                self._add_to_queue(test, self.cases.get(case['type']))
+            else:
+                self._run(test, self.cases.get(case['type']))
 
     def run(self, test):
         if self.cases is None:
