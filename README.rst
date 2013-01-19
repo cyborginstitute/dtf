@@ -1,0 +1,193 @@
+=============================
+Document Test Framework (dtf)
+=============================
+
+``dtf`` provides tools to define testable parameters for documentation
+and verify that documentation is correct and well formed. To test
+documentation, users define two components:
+
+- a "case", or Python module that defines the parameters of the test,
+  and implements the test itself.
+
+- a "test" or YAML file/document that defines inputs to the test,
+  including the files, and any other required meta data.
+
+Users can define multiple tests and cases as needed, though typically
+users will define a handful of cases and a much larger number of
+tests. Goals of ``dtf`` are:
+
+- to make conditions (i.e. tests) easy to define for technical writers
+  and documentation maintainers, without needing to write code.
+
+- to help documentation teams encode a style and verify adherence
+  automatically without relying on individuals to police all aspects
+  of editorial style.
+
+- to automate checking of various internal dependencies to help make
+  larger multi-file resources manageable.
+
+Continue reading for a description of the use and implementation of
+``dtf`` in your projects.
+
+Installation
+------------
+
+Install using ``pip``. The process resembles the following: ::
+
+   cd ~/
+   git clone git://github.com/tychoish/dtf.git
+   cd ~/dtf
+   python setup.py bdist
+   sudo pip install dist/dtf-*
+
+``dtf`` should now be accessible in your system path, as ``dtf``.
+
+In your project you will want to create two directories, named
+``case/``, for case modules, and ``test/``, for test definitions.
+
+Command Line Operation
+----------------------
+
+This section describes various invocations of the ``dtf`` program:
+
+Running A Collection of Tests
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default, ``dtf`` will look for case modules in the ``case/``
+sub-directory of the current directory and test definition in the
+``test/`` sub-directory of the current directory, and run all available
+tests. In this mode, simply issue the following command: ::
+
+   dtf
+
+You can change the default directory by passing the following options
+on the command line: ::
+
+   dtf --casedir buildscripts/dtf/ --testdir t/
+
+Alternately, you can use the following short form options:
+
+   dtf -c buildscripts/dtf/ -t t/
+
+Running A Single Test
+~~~~~~~~~~~~~~~~~~~~~
+
+Optionally, you can run a single test case. Toggle this mode by
+passing ``--single`` or ``-s`` to ``dtf``. Consider the following
+invocations: ::
+
+   dtf --single --casedef buildscripts/dtf/equality.py --yamltest t/equality_test0.yaml
+
+In short form, you can express this as:
+
+   dtf -s -d buildscripts/dtf/equality.py -y t/equality_test0.yaml
+
+Additional Options
+~~~~~~~~~~~~~~~~~~
+
+Combine any of the above ``dtf`` invocations with the following three
+behavioral options:
+
+``--vebose``, ``-v``
+
+   When set, ``dtf`` will output the result of all test validation
+   *and* all passing and failing tests. Off by default.
+
+``--fatal``, ``-f``
+
+   When set, ``dtf`` will raise an exception (and terminate
+   operation,) if a test fails. Useful for large test suites and rapid
+   development cycles.
+
+``--passing``, ``-p``
+
+   If implemented, a passing method tests will return a passing
+   document. See ``paired.py`` in the ``dtf`` source repository for an
+   example of this implementation.
+
+Writing Case Modules
+--------------------
+
+All tests have a ``type`` field that specifies which case module to
+use when running the test. The name of your case module should
+correspond identically to this type declaration.
+
+When running a test, ``dtf`` calls the the ``main()`` method from the
+case module, and passes two arguments: the name of the case (string)
+and the entire case as read from the YAML specification as a
+dictionary.
+
+Strictly speaking, as long as ``main()`` runs a test using these
+archives, the implementation is not important. However, the
+``DtfCase`` class provides a number of useful tools for writing
+cases. You can read the ``dtf`` source to get a better idea of the
+available tools. Consider the following example: ::
+
+   from cases import DtfCase
+
+   class DtfEquality(DtfCase):
+       def test(self):
+           if self.case['value0'] == self.case['value1']:
+               r = True
+               msg = ('[%s]: "%s" %s successful! %s equals %s'
+                      % (self.name, self.case['name'], 'equality test', self.case['value0'], self.case['value1']))
+           else:
+               r = False
+               msg = ('[%s]: "%s" %s failed! %s does not equal %s'
+                      % (self.name, self.case['name'], 'equality test', self.case['value0'], self.case['value1']))
+
+           return r, msg
+
+   def main(name, case):
+       c = DtfEquality(name, case)
+       c.required_keys(['name', 'type', 'value0', 'value1'])
+       c.run()
+
+The best way to implement a test case is to subclass ``DtfCase`` and
+implement the ``test()`` method on this class. ``test()`` should
+return a tuple, that contains a boolean reflecting the test's success
+or failure, and a message that ``dtf`` should return (if needed)
+regarding the test's output. The above ``main()`` method:
+
+- creates an object (``c``) of the previously defined ``DtfEquality``
+  class, passing in the test name and object.
+
+- calling the ``required_keys()`` method to define what top level
+  fields must appear in the test specifications.
+
+While this example is typical, inside of the main, you may call
+whatever ``DtfCase`` methods you like. The default ``run()`` method
+resembles the following:
+
+    def run(self):
+        self.validate(verbose=VERBOSE, fatal=FATAL)
+
+        t = self.test()
+        self.return_value = t[0]
+
+        self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)
+
+To summarize, ``run()``: ::
+
+- validates the top level keys, as set by ``required_keys()``
+
+- calls the ``test()`` method, defined in the case itself.
+
+- passes the return value to the objects ``return_value`` instance
+  variable and calls the ``response()`` method which returns messages
+  as needed, based on the return value of ``test()``.
+
+Specifying ``dtf`` Tests
+------------------------
+
+The structure of a test definition depends largely on the case module. Define
+tests in YAML. For example, a basic equality/inequality test might
+resemble the following:
+
+    name: 'example equality test'
+    type: equality
+    value0: 1
+    value1: 1
+
+The ``DtfCase.validate()`` method, at present, does not validate
+documents recursively.
