@@ -22,6 +22,7 @@ from importlib import import_module
 
 # internal modules
 from utils import get_test_name, expand_tree
+from err import DtfDiscoveryException
 
 def get_module_path(path):
     r = os.getcwd() + '/' + path
@@ -66,12 +67,12 @@ class TestDefinitions(object):
         if name in self.tests:
             pass
         elif name is False:
-            raise Exception('ERROR: test named - ' + name + ' does not exist.')
+            raise DtfDiscoveryException('test named - ' + name + ' does not exist.')
 
         path = os.path.dirname(filename)
 
         if path is False:
-            raise Exception('ERROR: test named - ' + name + ' does not exist.')
+            raise DtfDiscoveryException('test named - ' + name + ' does not exist.')
 
         sys.path.append(path)
         self.add(name, path)
@@ -117,7 +118,7 @@ class TestRunner(object):
 
     def run_all(self, definitions=None, queue=False):
         if definitions is None and self.cases is None:
-            raise Exception('Definitions not added to TestRunner Object.')
+            raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
         elif definitions is None:
             definitions = self.cases
 
@@ -131,10 +132,10 @@ class TestRunner(object):
 
     def run(self, test):
         if self.cases is None:
-            raise Exception('Definitions not added to TestRunner Object.')
+            raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
         else:
             if test in self.test_specs:
                 case = self.test_specs[test]
                 self._run(test, self.cases.get(case['type']))
             else:
-                raise Exception('Test Not Defined or Loaded')
+                raise DtfDiscoveryException('Test Not Defined or Loaded')

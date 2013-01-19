@@ -15,12 +15,7 @@
 import yaml
 
 from dtf import VERBOSE, FATAL, PASSING
-
-class DtfException(Exception):
-    pass
-
-class DtfNotImplemented(DtfException):
-    pass
+from err import DtfException, DtfTestException, DtfNotImplemented
 
 def validate_keys(keys, case, name):
     for key in keys:
@@ -75,10 +70,10 @@ class DtfCase(object):
         elif result is False and fatal is False:
             print(msg)
         elif result is False and fatal is True:
-            raise Exception(msg)
+            raise DtfTestException(msg)
 
     def passing(self):
-        raise NotImplemented()
+        raise DtfNotImplemented("test cases must implement the optional passing() method")
 
     def print_passing_spec(self):
         if self.return_value is False:
@@ -86,7 +81,7 @@ class DtfCase(object):
             print(self.passing() + '...')
 
     def test(self):
-        raise DtfNotImplemented('test cases must implement run methods.')
+        raise DtfNotImplemented('test cases must implement the required run() method.')
 
     def run(self):
         self.validate(verbose=VERBOSE, fatal=FATAL)
