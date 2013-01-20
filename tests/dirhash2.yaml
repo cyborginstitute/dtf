@@ -1,0 +1,9 @@
+name: 'directory count and file changed'
+type: directory_paired
+directory: cases/
+count: 9
+file:
+  name: 'first equality test'
+  path: tests/test0.yaml
+  hash: 634fb88ae48c80dfa32a04eaf6a25b00
+...
