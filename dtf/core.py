@@ -116,19 +116,34 @@ class TestRunner(object):
         else:
             self._load(test)
 
-    def run_all(self, definitions=None, queue=False):
+    def run_all(self, definitions=None):
         if definitions is None and self.cases is None:
             raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
         elif definitions is None:
             definitions = self.cases
 
         for test in self.test_specs:
-            case = self.test_specs[test]
+            self._run(test, self.cases.get(self.test_specs[test]['type']))
 
-            if queue is True: 
-                self._add_to_queue(test, self.cases.get(case['type']))
-            else:
-                self._run(test, self.cases.get(case['type']))
+    def run_multi(self, MULTI):
+        try:
+            import threadpool
+        except ImportError:
+            print('[dtf]: "threadpool" module not installed, falling back to serial mode.')
+            run_all()
+            return None
+
+        for test in self.test_specs:
+            self._add_to_queue(test, self.cases.get(self.test_specs[test]['type']))
+
+        pool = threadpool.ThreadPool(MULTI)
+
+        for j in self.queue:
+            pool.putRequest(threadpool.WorkRequest(j[0], (j[1], j[2])))
+
+        import time
+        time.sleep(0.01)
+        pool.wait()
 
     def run(self, test):
         if self.cases is None:

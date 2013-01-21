@@ -39,6 +39,8 @@ def interface():
                         default=None, help='in "single" mode, specify the path of the corresponding test implementation.')
 
     # behavioral operations. some passed to tests.
+    parser.add_argument('--multi', '-m', action='store', type=int,
+                        default=None, help='Run tests with N threads. Disabled by default.')
     parser.add_argument('--verbose', '-v', action='store_true',
                         default=False, help='report all test activity. False by default.')
     parser.add_argument('--fatal', '-f', action='store_true',
@@ -56,7 +58,10 @@ def run_all(case_paths=['cases/'], test_paths=['tests/']):
     t.load_all()
     t.definitions(dfn.tests)
 
-    t.run_all()
+    if MULTI is not None:
+        t.run_multi(MULTI)
+    else:
+        t.run_all()
 
 def run_one(case, test):
     dfn = TestDefinitions()
@@ -79,6 +84,7 @@ user_input = interface()
 VERBOSE = user_input.verbose
 FATAL = user_input.fatal
 PASSING = user_input.passing
+MULTI = user_input.multi
 
 if __name__ == '__main__':
     main()
