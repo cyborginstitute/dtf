@@ -16,7 +16,8 @@
 
 # internal imports
 from utils import expand_tree, get_test_name
-from core import TestDefinitions, TestRunner
+from core import TestDefinitions, TestRunner, SuiteTestRunner
+from core import ProcessTestRunner, ThreadedTestRunner
 
 import sys
 import argparse
@@ -39,8 +40,10 @@ def interface():
                         default=None, help='in "single" mode, specify the path of the corresponding test implementation.')
 
     # behavioral operations. some passed to tests.
-    parser.add_argument('--multi', '-m', action='store', type=int,
-                        default=None, help='Run tests with N threads. Disabled by default.')
+    parser.add_argument('--multi', '-m', action='store',
+                        default=None, help='Run tests in a threaded or multi-rocessing environment. Specify "thread" or "process" to determine parallelism model. Disabled by default.')
+    parser.add_argument('--jobs', '-j', action='store', type=int,
+                        default=2, help='Number of parallel tests to run. Must run with "--multi". Default value is 2.')
     parser.add_argument('--verbose', '-v', action='store_true',
                         default=False, help='report all test activity. False by default.')
     parser.add_argument('--fatal', '-f', action='store_true',
@@ -54,14 +57,17 @@ def run_all(case_paths=['cases/'], test_paths=['tests/']):
     dfn = TestDefinitions(case_paths)
     dfn.load_all()
 
-    t = TestRunner(test_paths)
+    if user_input.multi is None:
+        t = SuiteTestRunner(test_paths)
+    elif user_input.multi == 'thread': 
+        t = ThreadedTestRunner(test_paths, user_input.jobs)
+    elif user_input.multi == 'process': 
+        t = ProcessTestRunner(test_paths, user_input.jobs)
+
     t.load_all()
     t.definitions(dfn.tests)
 
-    if MULTI is not None:
-        t.run_multi(MULTI)
-    else:
-        t.run_all()
+    t.run()
 
 def run_one(case, test):
     dfn = TestDefinitions()
@@ -84,7 +90,6 @@ user_input = interface()
 VERBOSE = user_input.verbose
 FATAL = user_input.fatal
 PASSING = user_input.passing
-MULTI = user_input.multi
 
 if __name__ == '__main__':
     main()

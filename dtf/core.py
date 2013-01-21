@@ -78,7 +78,6 @@ class TestDefinitions(object):
         self.add(name, path)
         self._load_test(name, path)
 
-
 class TestRunner(object):
     def __init__(self, test_paths=[]):
         self.test_paths = test_paths
@@ -91,7 +90,11 @@ class TestRunner(object):
 
     def _load(self, spec):
         with open(spec) as f:
-            self.test_specs.update( { get_test_name(spec): yaml.load(f) } )
+            test = get_test_name(spec)
+            case = yaml.load(f)
+
+            self.test_specs.update( { test: case } )
+            self._add_to_queue(test, case['type'])
 
     def _load_tree(self, path):
         for test in expand_tree(path):
@@ -116,35 +119,6 @@ class TestRunner(object):
         else:
             self._load(test)
 
-    def run_all(self, definitions=None):
-        if definitions is None and self.cases is None:
-            raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
-        elif definitions is None:
-            definitions = self.cases
-
-        for test in self.test_specs:
-            self._run(test, self.cases.get(self.test_specs[test]['type']))
-
-    def run_multi(self, MULTI):
-        try:
-            import threadpool
-        except ImportError:
-            print('[dtf]: "threadpool" module not installed, falling back to serial mode.')
-            run_all()
-            return None
-
-        for test in self.test_specs:
-            self._add_to_queue(test, self.cases.get(self.test_specs[test]['type']))
-
-        pool = threadpool.ThreadPool(MULTI)
-
-        for j in self.queue:
-            pool.putRequest(threadpool.WorkRequest(j[0], (j[1], j[2])))
-
-        import time
-        time.sleep(0.01)
-        pool.wait()
-
     def run(self, test):
         if self.cases is None:
             raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
@@ -154,3 +128,51 @@ class TestRunner(object):
                 self._run(test, self.cases.get(case['type']))
             else:
                 raise DtfDiscoveryException('Test Not Defined or Loaded')
+
+class SuiteTestRunner(TestRunner):
+    def run(self, definitions=None):
+        if definitions is None and self.cases is None:
+            raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
+        elif definitions is None:
+            definitions = self.cases
+
+        for test in self.test_specs:
+            self._run(test, self.cases.get(self.test_specs[test]['type']))
+
+class ThreadedTestRunner(TestRunner):
+    def __init__(self, test_paths=[], pool_size=2):
+        super(ThreadedTestRunner, self).__init__(test_paths)
+        self.pool_size = pool_size
+
+    def run(self):
+        try:
+            import threadpool
+        except ImportError:
+            print('[dtf]: "threadpool" module not installed, falling back to serial mode.')
+            run_all()
+            return None
+
+        pool = threadpool.ThreadPool(self.pool_size)
+
+        for j in self.queue:
+            pool.putRequest(threadpool.WorkRequest(self.cases.get(j[0]), (j[1], j[2])))
+
+        import time
+        time.sleep(0.01)
+        pool.wait()
+
+class ProcessTestRunner(TestRunner):
+    def __init__(self, test_paths=[], pool_size=2):
+        super(ProcessTestRunner, self).__init__(test_paths)
+        self.pool_size = pool_size
+
+    def run(self):
+        from multiprocessing import Pool
+
+        p = Pool(processes=self.pool_size)
+
+        for j in self.queue:
+            p.apply_async(self.cases.get(j[0]), (j[1], j[2]))
+
+        p.close()
+        p.join()
