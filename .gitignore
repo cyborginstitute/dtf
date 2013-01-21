@@ -10,3 +10,5 @@ build/*
 source/includes/hash.rst
 source/includes/install-curl-release*.rst
 source/includes/table-*.rst
+dist*
+*.egg-info
