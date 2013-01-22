@@ -15,9 +15,9 @@
 # limitations under the License.
 
 # internal imports
-from utils import expand_tree, get_test_name
-from core import TestDefinitions, TestRunner, SuiteTestRunner
-from core import ProcessTestRunner, ThreadedTestRunner
+from utils import expand_tree, get_name
+from core import SingleCaseDefinition, MultiCaseDefinition
+from core import SuiteTestRunner, ProcessTestRunner, ThreadedTestRunner
 
 import sys
 import argparse
@@ -54,8 +54,8 @@ def interface():
     return parser.parse_args()
 
 def run_all(case_paths=['cases/'], test_paths=['tests/']):
-    dfn = TestDefinitions(case_paths)
-    dfn.load_all()
+    dfn = MultiCaseDefinition(case_paths)
+    dfn.load()
 
     if user_input.multi is None:
         t = SuiteTestRunner(test_paths)
@@ -64,19 +64,18 @@ def run_all(case_paths=['cases/'], test_paths=['tests/']):
     elif user_input.multi == 'process': 
         t = ProcessTestRunner(test_paths, user_input.jobs)
 
-    t.load_all()
-    t.definitions(dfn.tests)
-
+    t.load()
+    t.definitions(dfn.cases)
     t.run()
 
 def run_one(case, test):
-    dfn = TestDefinitions()
+    dfn = SingleCaseDefinition()
     dfn.load(test)
 
-    t = TestRunner()
-    t.definitions(dfn.tests)
+    t = SingleTestRunner()
     t.load(case)
-    t.run(get_test_name(case))
+    t.definitions(dfn.cases)
+    t.run(get_name(case))
 
 def main():
     if user_input.single is False:

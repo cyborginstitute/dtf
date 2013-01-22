@@ -14,7 +14,7 @@
 
 import os
 
-def get_test_name(test):
+def get_name(test):
     return os.path.basename(test).split('.')[0]
 
 def expand_tree(path, input_extension='yaml'):
