@@ -1,26 +1,19 @@
-import hashlib
+from change import DtfChange
 import yaml
 
 # TODO make stand alone operation work with installed dtf
 try:
-    from cases import DtfCase, PASSING
+    from cases import PASSING
     import dtf
 except ImportError:
     import sys
     import os
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from cases import DtfCase, PASSING
+    from cases import PASSING
     import dtf
 
-class DtfPaired(DtfCase):
-    @staticmethod
-    def hash(file, block_size=2**20):
-        md5 = hashlib.md5()
-        with open(file, 'rb') as f:
-            for chunk in iter(lambda: f.read(128*md5.block_size), b''):
-                md5.update(chunk)
-        return md5.hexdigest()
 
+class DtfPaired(DtfChange):
     def test(self, a=False, b=False):
         if self.hash(self.case['file0']['path']) == self.case['file0']['hash']:
             a = True

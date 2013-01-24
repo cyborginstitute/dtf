@@ -1,18 +1,17 @@
-from paired import DtfPaired
+from change import DtfChange
 import os
 
 # TODO make stand alone operation work with installed dtf
 try:
-    from cases import DtfCase, PASSING
+    from cases import PASSING
     import dtf
 except ImportError:
     import sys
-    import os
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from cases import DtfCase, PASSING
+    from cases import PASSING
     import dtf
 
-class DtfDirectoryPaired(DtfPaired):
+class DtfDirectoryPaired(DtfChange):
     def test(self, a=False, b=False):
         if self.hash(self.case['file']['path']) == self.case['file']['hash']:
             a = True 
