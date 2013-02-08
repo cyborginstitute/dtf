@@ -1,0 +1,7 @@
+name: '2nd length test'
+type: tree_line_length
+directory: 'tests/'
+extension: 'yaml'
+max_length: 100
+exceptions: ''
+...

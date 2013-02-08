@@ -1,7 +1,5 @@
-name: '2nd length test'
+name: 'line length 1'
 type: line_length
-directory: 'tests/'
-extension: 'yaml'
-max_length: 100
-exceptions: ''
+file: 'dtf/utils.py'
+max_length: 40
 ...

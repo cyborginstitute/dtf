@@ -1,8 +1,5 @@
-name: 'first length test'
+name: 'line length 0'
 type: line_length
-directory: 'dtf/'
-extension: 'py'
+file: 'dtf/utils.py'
 max_length: 80
-exceptions:
-  - 'dtf/__init__.py'
 ...
