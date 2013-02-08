@@ -13,11 +13,10 @@ class DtfLineLength(DtfCase):
             return False
 
     def check_file(self, source_file, p=True):
-        ln = 1
         with open(source_file, 'r') as f:
-            ln += 1
+            ln = 1
             for line in f.readlines():
-                ln = ln + 1
+                ln += 1
                 if self.check_line(line, self.case['max_length']):
                     p = False
                     break
