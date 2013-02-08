@@ -167,7 +167,6 @@ class ThreadedTestRunner(MultiTestRunner):
             import threadpool
         except ImportError:
             print('[dtf]: "threadpool" module not installed, falling back to serial mode.')
-            run()
             return None
 
         pool = threadpool.ThreadPool(self.pool_size)
