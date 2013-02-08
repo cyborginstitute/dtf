@@ -9,10 +9,9 @@ class DtfTreeLineLength(DtfLineLength):
     def render_source_tree(self): 
         self.msg('crawling "%s" for files.' % self.case['directory'])
 
-        output = [ item for item 
+        output = [ item for item
                         in expand_tree(self.case['directory'], self.case['extension'])
-                        if item not in self.case['exceptions']
-                ]
+                        if item not in self.case['exceptions'] ]
 
         return output
 
