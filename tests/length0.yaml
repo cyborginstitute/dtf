@@ -1,0 +1,8 @@
+name: 'first length test'
+type: line_length
+directory: 'dtf/'
+extension: 'py'
+max_length: 80
+exceptions:
+  - 'dtf/__init__.py'
+...

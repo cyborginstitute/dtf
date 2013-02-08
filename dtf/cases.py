@@ -72,6 +72,10 @@ class DtfCase(object):
         elif result is False and fatal is True:
             raise DtfTestException(msg)
 
+    def msg(self, msg):
+        if VERBOSE:
+            print('[%s]: %s' % (self.name, msg))
+
     def passing(self):
         raise DtfNotImplemented("test cases must implement the optional passing() method")
 
