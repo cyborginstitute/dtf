@@ -12,12 +12,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`utils.py` is a module that provide a number of basic functions
+for core :mod:`dtf` operations and functions.
+"""
+
 import os
+import sys
 
 def get_name(test):
+    """
+    Returns the base name of a file without the file extension.
+    """
+
     return os.path.basename(test).split('.')[0]
 
+def get_module_path(path):
+    """
+    :param string path: The location within the current directory of
+                        a Python module.
+
+    :returns: The full absolute path of the module.
+
+    In addition to rendering an absolute path,
+    :meth:`get_module_path()` also appends this path to ``sys.path``.
+    """
+
+    r = os.getcwd() + '/' + path
+    sys.path.append(r)
+    return r
+
 def expand_tree(path, input_extension='yaml'):
+    """
+    :param string path: A starting path to begin searching for files.
+
+    :param string input_extension: Optional. A filter.
+
+    :returns: A list of paths starting recursively from the ``path``
+              and only including those objects that end with the
+              ``input_extensions.``
+
+    :meth:`expand_tree()` returns a list of paths, filtered to
+    """
+
     file_list = []
     for root, subFolders, files in os.walk(path):
         for file in files:

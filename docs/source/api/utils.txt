@@ -1,0 +1,6 @@
+============================================
+:mod:`utils` -- Utilities for Core Functions
+============================================
+
+.. automodule:: utils
+   :members:

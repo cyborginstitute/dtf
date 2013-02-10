@@ -12,3 +12,4 @@ source/includes/install-curl-release*.rst
 source/includes/table-*.rst
 dist*
 *.egg-info
+docs/build

@@ -1,0 +1,22 @@
+===============================
+Documentation Testing Framework
+===============================
+
+The Documentation Testing Framework, or :mod:`dtf` is a tool for
+specifying consistency tests for documentation to help ameliorate the
+maintenance costs for large documentation projects that target rapidly
+changing software.
+
+Users specify "cases" to describe abstract conditions by writing
+simple Python modules, and then define "tests" using a simple
+YAML-based document form that describe specific situations where a
+case must hold true. See the :doc:`tutorial </tutorial>` for more
+information on getting started with :mod:`dtf`.
+
+API Documentation
+-----------------
+
+.. toctree::
+   :glob:
+
+   api/*
