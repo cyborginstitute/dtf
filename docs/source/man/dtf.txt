@@ -1,0 +1,44 @@
+===================
+``dtf`` Manual Page
+===================
+
+Synopsis
+--------
+
+Options
+-------
+
+.. program:: dtf
+
+Application Behavior
+~~~~~~~~~~~~~~~~~~~~
+
+.. option:: --verbose, -v
+
+.. option:: --fatal, -f
+
+.. option:: --passing, p
+
+
+Test Suite Controllers
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. option:: --casedir, -c
+
+.. option:: --testdir, -t
+
+Single Test Runner
+~~~~~~~~~~~~~~~~~~
+
+.. option:: --single, -s
+
+.. option:: --yamltest, -y
+
+.. option:: --casedef, -d
+
+Parallelism Options
+~~~~~~~~~~~~~~~~~~~
+
+.. option:: --multi, -m
+
+.. option:: --jobs, -j

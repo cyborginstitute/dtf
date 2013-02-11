@@ -45,6 +45,10 @@ extlinks = {
     'github': ('http://github.com/cyborginstitute/%s', '')
     }
 
+intersphinx_mapping = {
+        'python' : ('http://docs.python.org/2/', '../build/python.inv'),
+}
+
 
 # -- Options for HTML output ---------------------------------------------------
 

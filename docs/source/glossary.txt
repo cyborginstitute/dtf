@@ -1,0 +1,20 @@
+========
+Glossary
+========
+
+.. glossary::
+   :sorted:
+
+   test
+      A :term:`YAML` document that defines a situation that :mod:`dtf`
+      will verify. Each :term:`case` reads and confirms one or more
+      tests. Tests are all distinct.
+
+   case
+      A Python module that defines a kind of consistency that
+      :mod:`dtf` can use in combination with :term:`test` to ensure
+      consistency in a documentation set.
+
+   YAML
+      *Yet another markup language*, a data interchange format. Used
+      by :mod:`dtf` for its human-read and edibility.

@@ -13,10 +13,34 @@ YAML-based document form that describe specific situations where a
 case must hold true. See the :doc:`tutorial </tutorial>` for more
 information on getting started with :mod:`dtf`.
 
-API Documentation
------------------
+Documents
+---------
+
+:doc:`API Documentation </api>`
+     Full documentation of the :mod:`dtf` and the examples in
+     :mod:`cases` that comprise ``dtf``.
+
+:doc:`/tutorial`
+     A basic tutorial that introduces installing ``dtf`` as well as
+     integrating ``dtf`` into your existing documentation workflow.
+
+:doc:`/strategy`
+     A high-level overview of the ``dtf`` project goals, the problems
+     with manual consistency testing, and the ways that ``dtf`` can
+     help documentations teams of all size produce great documentation.
 
 .. toctree::
-   :glob:
+   :hidden:
 
-   api/*
+   api
+   man
+   tutorial
+   strategy
+   glossary
+
+``dtf`` Project
+---------------
+
+- `Issue Tracker <https://issues.cyborginstitute.net/describecomponents.cgi?product=dtf>`_
+- `git repository <http://git.cyborginstitute.net/?p=dtf.git>`_
+- `github <http://github.com/tychoish/dtf/>`_

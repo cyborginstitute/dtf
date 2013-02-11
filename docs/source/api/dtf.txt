@@ -1,0 +1,83 @@
+====================================
+:mod:`dtf` -- Primary User Interface
+====================================
+
+Module
+------
+
+.. automodule:: dtf
+   :members:
+
+Constants
+---------
+
+.. data:: VERBOSE
+
+   Boolean. ``False`` by default. When ``True``, :mod:`dtf` will
+   silence output from passing tests.
+
+   See :option:`dtf --verbose`
+
+.. data:: FATAL
+
+   Boolean. ``False`` by default. When ``True``, :mod:`dtf` will raise
+   an exception and halt operation when a test fails, rather than
+   continuing.
+
+.. data:: PASSING
+
+   Boolean. ``False`` by default. When ``True``, if a :term:`case`
+   provides support, :mod:`dtf` will return a passing :term:`test`
+   specification for any failed test.
+
+.. data:: MULTI
+
+   String. ``None`` by default. Controls the parallelism model used by
+   :mod:`dtf`. Valid possibilities are:
+
+   - ``thread`` - run tests using thread pool. May provide better
+     performance for suites that are I/O or computationally intensive
+     (e.g. hashing.)
+
+   - ``process`` - run tests using a multi-process worker pool. May
+     provide better performance for suites with more complex Python
+     cases.
+
+   - ``None`` - run tests sequentially, with no parallelism..
+
+.. data:: JOBS
+
+   Integer. ``2`` by default. The size of the worker pool used by the
+   parallelism model defined by :data:`MULTI`.
+
+.. data:: SINGLE
+
+   Boolean. ``False`` by default. When ``True`` :mod:`dtf` will run a
+   single test rather than an entire suite. See :meth:`run_one()` for
+   more information.
+
+.. data:: YAMLTEST
+
+   String. ``None`` by default. When :data:`SINGLE` is true, the value
+   of :data:`YAMLTEST` specifies the location of the :term:`test`
+   specification.
+
+.. data:: CASEDEF
+
+   String. ``None`` by default. When :data:`SINGLE` is true, the value
+   of :data:`CASEDEF` specifies the location of the :term:`case`
+   definition.
+
+.. data:: CASEDIR
+
+   String (i.e. file path.) In the default "suite" mode (i.e. when
+   :data:`SINGLE` is ``False``,) this path points to the directory of
+   :term:`cases <case>` (i.e. Python modules) that define test
+   conditions.
+
+.. data:: TESTDIR
+
+   String (i.e. file path.) In the default "suite" mode (i.e. when
+   :data:`SINGLE` is ``False``,) this path points to the directory of
+   :term:`tests <test>` (i.e. YAML specifications) that specify each
+   test.

@@ -1,0 +1,27 @@
+===================================
+Documentation Testing Framework API
+===================================
+
+The :doc:`cases module </api/cases>` provides the primary API used
+in the course of normal dtf use. The complete API documentation that
+follows is mostly to explain the implementation and internal operation
+of :mod:`dtf` as a whole.
+
+Modules
+-------
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+
+   api/*
+
+Resources
+---------
+
+Additionally, :mod:`dtf` has the following external dependencies, both
+from the Python standard library and 3rd party packages.
+
+- `threadpool <http://pypi.python.org/pypi/threadpool>`_
+- `multiprocessing <http://docs.python.org/2/library/multiprocessing.html>`_
+- `PyYaml <http://pyyaml.org/>`_
