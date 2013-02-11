@@ -17,15 +17,25 @@ import yaml
 from dtf import VERBOSE, FATAL, PASSING
 from err import DtfException, DtfTestException, DtfNotImplemented
 
-def validate_keys(keys, case, name):
+def validate_keys(keys, test_spec, name):
     for key in keys:
-        if case.has_key(key) is False:
+        if test_spec.has_key(key) is False:
             return False
     return True
 
 class DtfCase(object):
-    def __init__(self,name, case):
-        self.case = case
+    """
+    Pass the following two parameters when instantiating
+    :class:`DtfCase` objects:
+    
+    :param string name:
+    
+    :param object test_spec: The test_spec object, derived 
+
+    """
+
+    def __init__(self,name, test_spec):
+        self.test_spec = test_spec
         self.name = name
         self.keys = []
 
@@ -33,34 +43,34 @@ class DtfCase(object):
         for key in keys:
             self.keys.append(key)
 
-    def validate(self, keys=None, case=None, verbose=False, fatal=False):
-        if case is None:
-            case = self.case
+    def validate(self, keys=None, test_spec=None, verbose=False, fatal=False):
+        if test_spec is None:
+            test_spec = self.test_spec
 
         if keys is None and self.keys is False:
             raise DtfException('must add required_keys to DtfCase subclasses.')
         else:
             keys = self.keys
 
-        t = validate_keys(keys, case,self.name)
+        t = validate_keys(keys, test_spec,self.name)
 
         if t is True:
-            msg = ('[%s]: "%s" is a valid "%s" test case.'
-                   % (self.name, self.case['name'], self.case['type']))
+            msg = ('[%s]: "%s" is a valid "%s" test spec.'
+                   % (self.name, self.test_spec['name'], self.test_spec['type']))
         elif t is False:
-            msg = ('[%s]: "%s" is not a valid "%s" test case.'
-                   % (self.name, self.case['name'], self.case['type']))
+            msg = ('[%s]: "%s" is not a valid "%s" test spec.'
+                   % (self.name, self.test_spec['name'], self.test_spec['type']))
 
         return self.response(result=t, msg=msg, verbose=verbose, fatal=fatal)
 
-    def dump(self, case, path, keys=None):
+    def dump(self, test_spec, path, keys=None):
         if keys is not None:
-            valid = self.validate(keys, case)
+            valid = self.validate(keys, test_spec)
             if valid[0] is False:
                 raise DtfException(valid[1])
 
         with open(path, 'w') as f:
-            f.write(yaml.dump(case, default_flow_style=False))
+            f.write(yaml.dump(test_spec, default_flow_style=False))
 
     def response(self, result, msg, verbose=False, fatal=False):
         if result is True and verbose is True:
@@ -77,7 +87,7 @@ class DtfCase(object):
             print('[%s]: %s' % (self.name, msg))
 
     def passing(self):
-        raise DtfNotImplemented("test cases must implement the optional passing() method")
+        raise DtfNotImplemented("cases must implement the optional passing() method")
 
     def print_passing_spec(self):
         if self.return_value is False:
@@ -85,12 +95,13 @@ class DtfCase(object):
             print(self.passing() + '...')
 
     def test(self):
-        raise DtfNotImplemented('test cases must implement the required run() method.')
+        raise DtfNotImplemented('cases must implement the required run() method.')
 
     def run(self):
         self.validate(verbose=VERBOSE, fatal=FATAL)
 
         t = self.test()
+
         self.return_value = t[0]
 
         self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)
