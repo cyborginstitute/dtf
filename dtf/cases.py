@@ -17,42 +17,101 @@ import yaml
 from dtf import VERBOSE, FATAL, PASSING
 from err import DtfException, DtfTestException, DtfNotImplemented
 
-def validate_keys(keys, test_spec, name):
-    for key in keys:
-        if test_spec.has_key(key) is False:
-            return False
-    return True
-
 class DtfCase(object):
     """
     Pass the following two parameters when instantiating
     :class:`DtfCase` objects:
     
     :param string name:
+
+        The name of the test, typically derived from the file name of
+        the test specification itself.
     
-    :param object test_spec: The test_spec object, derived 
+    :param object test_spec: 
+
+        The test_spec object, imported from the term:`test`
+        specification provided in YAML by the user.
+
+    :class:`DtfCase` is a base class useful for implementing most
+    ``dtf`` cases while requiring only limited familiarity with
+    ``dtf`` internals.
 
     """
 
     def __init__(self,name, test_spec):
         self.test_spec = test_spec
-        self.name = name
+        """A dictionary, passed to the class during object creation,
+        that holds the test specification imported from the
+        user-supplied YAML specification."""
+
+        self.name = name 
+        """The name of the test, typically derived from the file name
+        of the test itself."""
+        
         self.keys = []
+        """A list of top-level keys in the :attr:`test_spec`
+        dictionary. Cases will pass a list of keys to the
+        :meth:`required_keys()` method after creating the object, but
+        before calling. :meth:`validate()`."""
 
     def required_keys(self, keys):
+        """
+        :param list keys: 
+
+           A list of top level keys that :attr:`test_spec` must have
+           to be considered valid by :meth:`validate()`.
+
+        Currently does not implement recursive key checking.
+        """
+
         for key in keys:
             self.keys.append(key)
 
-    def validate(self, keys=None, test_spec=None, verbose=False, fatal=False):
-        if test_spec is None:
-            test_spec = self.test_spec
+    def validate(self, keys=None, test_keys=None, verbose=None, fatal=None):
+        """
+        All arguments to the :meth:`validate()` method are optional,
+        and if any arguments have the value of ``None``
+        :meth:`validate()` will substitute values from the object
+        instance or user input values.
+
+        :param list keys: 
+
+            A list of required keys that `test_spec`` must contain to
+            be valid.
+
+        :param list test_keys:
+
+            A list of keys from the ``test_spec`` that the must be
+            identical to or a superset of the keys in the ``keys``
+            list.
+
+        :param bool verbose:
+
+        :param bool fatal:
+
+        """
+
+        if test_keys is None:
+            test_keys = self.test_spec.keys()
+
+        if verbose is None:
+            verbose = VERBOSE
+            
+        if fatal is None: 
+            fatal = FATAL
 
         if keys is None and self.keys is False:
             raise DtfException('must add required_keys to DtfCase subclasses.')
         else:
             keys = self.keys
 
-        t = validate_keys(keys, test_spec,self.name)
+        t = True
+        for key in keys:
+            if key in test_keys:
+                pass
+            else:
+                t = False
+                break
 
         if t is True:
             msg = ('[%s]: "%s" is a valid "%s" test spec.'

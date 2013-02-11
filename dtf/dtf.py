@@ -14,15 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+:mod:`dtf` provides the main user interface for `dtf`, coordinating
+input from users with the actual behavior of ``dtf`` as implemented in
+:mod:`core`.
+
+See :doc:`/man/dtf` for complete documentation of the command-line
+interface of ``dtf``.
+"""
+
 # internal imports
 from utils import expand_tree, get_name
 from core import SingleCaseDefinition, MultiCaseDefinition
 from core import SuiteTestRunner, ProcessTestRunner, ThreadedTestRunner
 
-import sys
 import argparse
+import sys
 
 def interface():
+    """
+    :returns: Parsed :class:`~python:argparse.ArgumentParser` object
+              that contains user input.
+
+    See :doc:`/man/dtf` for full documentation of all user options.
+    """
+
     parser = argparse.ArgumentParser("Document Testing Framework")
 
     # options for running larger test suites.
@@ -53,22 +69,76 @@ def interface():
 
     return parser.parse_args()
 
-def run_all(case_paths=['cases/'], test_paths=['tests/']):
+def run_many(case_paths=['cases/'], test_paths=['tests/'], multi=None, jobs=2):
+    """
+    :param list case_paths:
+
+        A list of paths that contain :term:`cases <case>`, or Python
+        definitions of a consistency test. By default, :mod:`dtf` uses
+        the :file:`cases/` in the current directory as the path for
+        cases.
+
+    :param list test_paths:
+
+        A list of path that contain :term:`test` definitions, or
+        :term:`YAML` specifications of conditions to verify.
+
+    :param string multi:
+
+        ``multi`` contrails the parallelism model for :mod:`dtf`. The
+        default mode is ``None``, which runs all tests
+        sequentially. You may also specify ``thread`` to run tests in
+        parallel using a thread pool, or ``process`` to run tests in
+        parallel using a pool of separate processes.
+
+    :param int jobs:
+
+        When running in ``thread`` or ``process`` ``multi`` mode, the
+        value of the ``jobs`` value controls the size of the thread or
+        process worker pool. The default value is ``2``.
+
+    You must specify values to the ``case_paths`` value that contain
+    the cases to support the test in the ``test_paths``.  You may
+    achieve additional control over test operation by breaking tests,
+    into folders and running those tests separately.
+
+    :meth:`run_many()` performs all testing for ``dtf`` when running
+    a suite of tests. By default :meth:`run_many()` runs test
+    sequentially; however, you can optionally run tests using a simple
+    parallel model using the ``multi`` and ``jobs`` options.
+
+    The options to :meth:`run_many()` are controllable using the
+    :doc:`command line options </man/dtf>`.
+    """
     dfn = MultiCaseDefinition(case_paths)
     dfn.load()
 
-    if user_input.multi is None:
+    if multi is None:
         t = SuiteTestRunner(test_paths)
-    elif user_input.multi == 'thread': 
-        t = ThreadedTestRunner(test_paths, user_input.jobs)
-    elif user_input.multi == 'process': 
-        t = ProcessTestRunner(test_paths, user_input.jobs)
+    elif multi == 'thread':
+        t = ThreadedTestRunner(test_paths, jobs)
+    elif multi == 'process':
+        t = ProcessTestRunner(test_paths, jobs)
 
     t.load()
     t.definitions(dfn.cases)
     t.run()
 
 def run_one(case, test):
+    """
+    :param path case_paths:
+
+       The path to a specific :term:`case` (i.e. Python module,)
+       relative to the current working directory.
+
+    :param path test_paths:
+
+       The path to a single :term:`test` (i.e. a test definition in
+       YAML format,) relative to the current working directory.
+
+    Use :meth:`run_one()` to run a single, specific ``dtf`` test.
+    """
+
     dfn = SingleCaseDefinition()
     dfn.load(test)
 
@@ -77,18 +147,39 @@ def run_one(case, test):
     t.definitions(dfn.cases)
     t.run(get_name(case))
 
-def main():
-    if user_input.single is False:
-        run_all(user_input.casedir, user_input.testdir)
-    else:
-        run_one(user_input.yamltest, user_input.casedef)
-
 ######################################################################
 
-user_input = interface()
-VERBOSE = user_input.verbose
-FATAL = user_input.fatal
-PASSING = user_input.passing
+# The following allows sphinx.ext.autodoc to parse this module.
+
+if sys.argv[0].rsplit('/', 1)[1] == 'sphinx-build':
+    VERBOSE,  FATAL, PASSING, MULTI, JOBS, \
+    SINGLE, YAMLTEST, CASEDEF, CASEDIR, TESTDIR = [ None ] * 10
+else:
+    user_input = interface()
+    VERBOSE = user_input.verbose
+    FATAL = user_input.fatal
+    PASSING = user_input.passing
+    MULTI = user_input.multi
+    JOBS = user_input.jobs
+    SINGLE = user_input.single
+    YAMLTEST = user_input.yamltest
+    CASEDEF = user_input.casedef
+    CASEDIR = user_input.casedir
+    TESTDIR = user_input.testdir
+
+def main():
+    """
+    :meth:`main()` is the main entry point for the :doc:`dtf
+    </man/dtf>` script. Based on the user input collected by
+    :meth:`interface()`, :meth:`main()` will call either
+    :meth:`run_one()` or :meth:`run_many()` with the appropriate
+    arguments, as collected by :meth:`interface()`.
+    """
+
+    if SINGLE is False:
+        run_many(CASEDIR, TESTDIR, MULTI, JOBS)
+    else:
+        run_one(YAMLTEST, CASEDEF)
 
 if __name__ == '__main__':
     main()

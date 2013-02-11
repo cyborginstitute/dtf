@@ -21,13 +21,8 @@ import os
 from importlib import import_module
 
 # internal modules
-from utils import get_name, expand_tree
+from utils import get_name, expand_tree, get_module_path
 from err import DtfDiscoveryException
-
-def get_module_path(path):
-    r = os.getcwd() + '/' + path
-    sys.path.append(r)
-    return r
 
 class CaseDefinition(object):
     def __init__(self, case_paths=[]):
