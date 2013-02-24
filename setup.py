@@ -9,8 +9,10 @@ if version_info < (2, 7):
 
 setup(
     name='dtf',
+    maintainer='tychoish',
+    maintainer_email='sam@tychoish.com',
     description='Documentation Testing Framework',
-    version='0.1',
+    version='0.2',
     license='Apache',
     url='http://cyborginstitute.org/projects/dtf',
     packages=['dtf'],
@@ -23,7 +25,7 @@ setup(
         'Topic :: Software Development :: Testing',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'License :: OSI Approved :: Apache Software License', 
+        'License :: OSI Approved :: Apache Software License',
     ],
     entry_points={
         'console_scripts': [
