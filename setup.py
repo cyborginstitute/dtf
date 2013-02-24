@@ -12,7 +12,7 @@ setup(
     maintainer='tychoish',
     maintainer_email='sam@tychoish.com',
     description='Documentation Testing Framework',
-    version='0.2',
+    version='0.2-dev',
     license='Apache',
     url='http://cyborginstitute.org/projects/dtf',
     packages=['dtf'],
