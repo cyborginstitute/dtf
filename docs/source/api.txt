@@ -2,10 +2,12 @@
 Documentation Testing Framework API
 ===================================
 
-The :doc:`cases module </api/cases>` provides the primary API used
-in the course of normal dtf use. The complete API documentation that
+The :doc:`cases module </api/cases>` provides the primary API used in
+the course of normal dtf use. The complete API documentation that
 follows is mostly to explain the implementation and internal operation
-of :mod:`dtf` as a whole.
+of :mod:`dtf` as a whole; however, if you're interested in developing
+case definitions, consider the documentation of :doc:`cases.py
+</api/cases>`.
 
 Modules
 -------

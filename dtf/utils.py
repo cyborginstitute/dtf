@@ -24,7 +24,6 @@ def get_name(test):
     """
     Returns the base name of a file without the file extension.
     """
-
     return os.path.basename(test).split('.')[0]
 
 def get_module_path(path):

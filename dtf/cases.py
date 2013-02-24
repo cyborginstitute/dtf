@@ -21,13 +21,13 @@ class DtfCase(object):
     """
     Pass the following two parameters when instantiating
     :class:`DtfCase` objects:
-    
+
     :param string name:
 
         The name of the test, typically derived from the file name of
         the test specification itself.
-    
-    :param object test_spec: 
+
+    :param object test_spec:
 
         The test_spec object, imported from the term:`test`
         specification provided in YAML by the user.
@@ -35,7 +35,6 @@ class DtfCase(object):
     :class:`DtfCase` is a base class useful for implementing most
     ``dtf`` cases while requiring only limited familiarity with
     ``dtf`` internals.
-
     """
 
     def __init__(self,name, test_spec):
@@ -44,10 +43,10 @@ class DtfCase(object):
         that holds the test specification imported from the
         user-supplied YAML specification."""
 
-        self.name = name 
+        self.name = name
         """The name of the test, typically derived from the file name
         of the test itself."""
-        
+
         self.keys = []
         """A list of top-level keys in the :attr:`test_spec`
         dictionary. Cases will pass a list of keys to the
@@ -56,7 +55,7 @@ class DtfCase(object):
 
     def required_keys(self, keys):
         """
-        :param list keys: 
+        :param list keys:
 
            A list of top level keys that :attr:`test_spec` must have
            to be considered valid by :meth:`validate()`.
@@ -69,26 +68,36 @@ class DtfCase(object):
 
     def validate(self, keys=None, test_keys=None, verbose=None, fatal=None):
         """
-        All arguments to the :meth:`validate()` method are optional,
-        and if any arguments have the value of ``None``
-        :meth:`validate()` will substitute values from the object
-        instance or user input values.
+        All arguments to the :meth:`~cases.DtfCase.validate()` method are
+        optional, and if any arguments have the value of ``None``
+        :meth:`validate()` will substitute values from the object instance or
+        user input values.
 
-        :param list keys: 
+        :param list keys:
 
-            A list of required keys that `test_spec`` must contain to
-            be valid.
+            A list of required keys that the :attr:`test_spec.keys
+            <cases.dtf.test_spec>` must contain to be valid.
 
         :param list test_keys:
 
             A list of keys from the ``test_spec`` that the must be
             identical to or a superset of the keys in the ``keys``
-            list.
+            list. Defaults to the value of :attr:`test_spec.keys
+            <cases.dtf.test_spec>`. 
 
         :param bool verbose:
 
+            If ``true``, :meth:`~cases.DtfCase.validate()` will return output
+            that confirms valid tests in addition to reporting invalid
+            tests. Defaults to the value of :data:`~dtf.VERBOSE`.
+
         :param bool fatal:
 
+            If ``true``, :meth:`~cases.DtfCase.validate()` will raise an
+            :exc:`~err.DtfException` rather than printing the failure message
+
+        Checks the keys in each test specification to ensure that the test has
+        the required keys.
         """
 
         if test_keys is None:
@@ -96,8 +105,8 @@ class DtfCase(object):
 
         if verbose is None:
             verbose = VERBOSE
-            
-        if fatal is None: 
+
+        if fatal is None:
             fatal = FATAL
 
         if keys is None and self.keys is False:
@@ -123,6 +132,24 @@ class DtfCase(object):
         return self.response(result=t, msg=msg, verbose=verbose, fatal=fatal)
 
     def dump(self, test_spec, path, keys=None):
+        """
+        :param dict test_spec: A dictionary to export to a yaml test
+                               specification.
+
+        :param string path: The path of the output file.
+
+        :param list keys: Optional. A list of keys to validate using
+                          :meth:`~cases.DtfTest.validate()`.
+
+        Writes a ``test_spec`` in YAML format to a file specified by ``path``. A
+        thin wrapper around :meth:`yaml.dump()` method, with additional
+        validation and formatting
+
+        When ``keys`` is not ``None``, :meth:`~cases.DtfTest.dump()` will
+        validate the keys in ``test_spec`` using
+        :meth:`~cases.DtfTest.validate()`. Invalid ``test_specs`` always raise a
+        :exc:`~err.DtfException`.
+        """
         if keys is not None:
             valid = self.validate(keys, test_spec)
             if valid[0] is False:
@@ -132,6 +159,17 @@ class DtfCase(object):
             f.write(yaml.dump(test_spec, default_flow_style=False))
 
     def response(self, result, msg, verbose=False, fatal=False):
+        """
+        :param bool result: 
+
+        :param msg string: 
+
+        :param bool verbose: Causes :meth:`~cases.DtfCases.response()` a
+                             to ``False``.
+
+        :param bool fatal: Defaults to ``False``. 
+        """
+
         if result is True and verbose is True:
             print(msg)
         elif result is True and verbose is False:
@@ -142,21 +180,70 @@ class DtfCase(object):
             raise DtfTestException(msg)
 
     def msg(self, msg):
+        """
+        :param string message: A message to return.
+
+        A helper function that returns a message, tagged with
+        :attr:`~cases.DtfCase.name`, *if* :data:`~dtf.VERBOSE` is true.
+        """
         if VERBOSE:
             print('[%s]: %s' % (self.name, msg))
 
     def passing(self):
+        """
+        A stub method, for the :meth:`~cases.DtfCase.passing()` method, that
+        case definitions may implement. The intention of the
+        :meth:`~cases.DtfCase.passing()` method is that, when called it will
+        take the ``test_spec`` for the current test and return a passing variant
+        that the developer/writer can use to update a fixed test.
+
+        Raises :exc:`~err.DtfNotImplemented`. 
+        """
+
         raise DtfNotImplemented("cases must implement the optional passing() method")
 
     def print_passing_spec(self):
+        """
+        A wrapper for :meth:`~cases.DtfCase.passing()` that:
+        - adds comments to the output for increased clarity.
+
+        - only prints the passing specification if the instance attribute
+          :attr:`~cases.DtfCase.return_value` is ``False``.
+        """
         if self.return_value is False:
             print("# passing document for: " + self.name + ".yaml")
             print(self.passing() + '...')
 
     def test(self):
-        raise DtfNotImplemented('cases must implement the required run() method.')
+        """
+        A stub method for the :meth:`~cases.DtfCase.test()` method, that case
+        definitions must implement.
+    
+        :meth:`~cases.DtfCase.test()` should return a two-tuple that contains:
+
+        0. A boolean that is ``True`` if the test passes and ``False`` if the
+           test fails.
+
+        1. A string that contains a message that *may* be delivered to the users
+           depending on the verbosity settings.
+        """
+        raise DtfNotImplemented('cases must implement the required test() method.')
 
     def run(self):
+        """
+        A helper method that orchestrates test operation. Takes no arguments and
+        preforms the folloing operations:
+        
+        1. Calls :meth:`~cases.DtfCase.validate()` method, passing
+           :data:`~dtf.VEBOSE` and :data:`~dtf.FATAL` as appropriate.
+
+        2. Sets :attr:`~cases.DtfCase.return_value` to the value of the first
+           element returned by :meth:`~cases.DtfCase.test()`.
+
+        3. Calls :meth:`~cases.DtfCase.response()` passing the results from
+           :meth:`~cases.DtfCase.test()` :data:`~dtf.VEBOSE` and
+           :data:`~dtf.FATAL` as appropriate.
+        """
         self.validate(verbose=VERBOSE, fatal=FATAL)
 
         t = self.test()

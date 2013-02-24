@@ -5,8 +5,10 @@ Document Test Framework (dtf)
 .. in the long term, this content will become the tutorial in the
    documentation and this page will just have links to the
    documentation and links to the bug tracker and project/release
-   information.
+   information. 
 
+   
+   
 ``dtf`` provides tools to define testable parameters for documentation
 and verify that documentation is correct and well formed. To test
 documentation, users define two components:

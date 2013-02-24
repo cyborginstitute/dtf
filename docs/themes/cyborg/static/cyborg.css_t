@@ -2,16 +2,16 @@
  * jinja.css_t
  * ~~~~~~~~~~~
  *
- * :copyright: Copyright 2011 by Armin Ronacher.
- * :license: Flask Design License, see LICENSE for details.
+ * :copyright: copyright 2011 by armin ronacher.
+ * :license: flask design license, see license for details.
  */
 
-/* @import url(http://fonts.googleapis.com/css?family=Crimson+Text); */
+/* @import url(http://fonts.googleapis.com/css?family=crimson+text); */
 
 {% set body_width = '68%' %}
 {% set sidebar_width = '26%' %}
-{% set font_family = 'Georgia, serif' %}
-{% set header_font_family = 'Crimson Text, ' ~ font_family %}
+{% set font_family = 'georgia, serif' %}
+{% set header_font_family = 'crimson text, ' ~ font_family %}
 
 @import url("basic.css");
 
@@ -47,7 +47,7 @@ div.sphinxsidebar {
 }
 
 hr {
-    border: 1px solid #B1B4B6;
+    border: 1px solid #b1b4b6;
 }
 
 div.body {
@@ -229,7 +229,7 @@ div.highlight {
 }
 
 dt:target, .highlight {
-    background: #FAF3E8;
+    background: #faf3e8;
 }
 
 div.note {
@@ -352,7 +352,7 @@ pre {
     margin: 1em 2em;
     line-height: 1.3em;
 }
-dl dl pre {
+dl dl {
     margin-left: -90px;
     padding-left: 90px;
 }

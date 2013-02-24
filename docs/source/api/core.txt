@@ -1,0 +1,7 @@
+=========================================
+:mod:`core` -- Test Loading and Execution
+=========================================
+
+.. automodule:: core
+   :members:
+   :private-members:

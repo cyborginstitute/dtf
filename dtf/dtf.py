@@ -26,7 +26,7 @@ interface of ``dtf``.
 # internal imports
 from utils import expand_tree, get_name
 from core import SingleCaseDefinition, MultiCaseDefinition
-from core import SuiteTestRunner, ProcessTestRunner, ThreadedTestRunner
+from core import SingleTestRunner, SuiteTestRunner, ProcessTestRunner, ThreadedTestRunner
 
 import argparse
 import sys
