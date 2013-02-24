@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import yaml
 
 from dtf import VERBOSE, FATAL, PASSING
@@ -62,7 +63,6 @@ class DtfCase(object):
 
         Currently does not implement recursive key checking.
         """
-
         for key in keys:
             self.keys.append(key)
 
@@ -94,7 +94,7 @@ class DtfCase(object):
         :param bool fatal:
 
             If ``true``, :meth:`~cases.DtfCase.validate()` will raise an
-            :exc:`~err.DtfException` rather than printing the failure message
+            :exc:`~err.DtfException` rather than printing the failure message.
 
         Checks the keys in each test specification to ensure that the test has
         the required keys.
@@ -251,3 +251,4 @@ class DtfCase(object):
         self.return_value = t[0]
 
         self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)
+

@@ -29,6 +29,10 @@ Documents
      with manual consistency testing, and the ways that ``dtf`` can
      help documentations teams of all size produce great documentation.
 
+:doc:`/man/dtf`
+     A UNIX-style man page that provides an overview for use and
+     operation of the test runner.
+
 .. toctree::
    :hidden:
 

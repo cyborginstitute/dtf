@@ -1,3 +1,7 @@
 ============================
 Consistency Testing Strategy
 ============================
+
+`Bug #53 <https://issues.cyborginstitute.net/show_bug.cgi?id=53>`_
+exists to track progress and work on this page, which will be complete
+in time for the next release.

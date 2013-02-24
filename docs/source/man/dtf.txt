@@ -5,6 +5,16 @@
 Synopsis
 --------
 
+``dtf`` is a test runner, that coordinates consistency test
+specification and definition, to facilitate easy, regular and
+automated testing of documentation and other similar resources.
+
+``dtf`` does not run Python :mod:`python:unittest` or coordinate with
+existing test frameworks, and is designed to ease the burden of manual
+consistency editing and checking, and help increase the quality of
+tests without increasing the workload for editors and documentation
+maintainers. See :doc:`/tutorial` for more information.
+
 Options
 -------
 
@@ -13,32 +23,120 @@ Options
 Application Behavior
 ~~~~~~~~~~~~~~~~~~~~
 
+These options control the primary behavior and output of ``dtf``, but
+do not effect how or which tests run.
+
 .. option:: --verbose, -v
+
+   Enables verbose output, causing ``dtf`` to return all output from
+   operations including successful test validation and successful fest
+   cases.
+
+   By default, ``dtf`` only returns output for tests that fail, and
+   suppresses all passing output.
 
 .. option:: --fatal, -f
 
-.. option:: --passing, p
+   Turns all test and validation errors into exceptions, and ``dtf``
+   will stop at the first test failure. By default, ``dtf`` prints all
+   test and validation errors and continues until it hits an invalid
+   test definition or completes all tests.
 
+.. option:: --passing, -p
+
+   Implementation of the testing response is up to the specific test
+   and its implementation. Tests may not be able to automatically
+   generate passing output, and these tests will ignore this option.
 
 Test Suite Controllers
 ~~~~~~~~~~~~~~~~~~~~~~
 
+These options allow you to specify paths for case definitions and test
+specifications to run suites of tests. You can specify these options
+more than once to run multiple groups of tests in a single ``dtf``
+invocation.
+
 .. option:: --casedir, -c
 
+   These are the Python modules that define the parameters and
+   procedure that the tests enforce. Arguments should be paths
+   relative to current working directory.
+
+   Defaults to ``cases/``.
+
 .. option:: --testdir, -t
+
+   These are the YAML test definitions that specify a case and a
+   condition that ``dtf`` will enforce.
+
+   Defaults to ``tests/``.
 
 Single Test Runner
 ~~~~~~~~~~~~~~~~~~
 
+The "single mode" allows ``dtf`` to load and run a single test at a
+time. It exists for troubleshooting and development purpose to isolate
+a single test without needing to run the full suite.
+
+Furthermore, with single mode, you can delegate running the test suite
+to another build tool, depending on the requirements of your build and
+test infrastructure.
+
 .. option:: --single, -s
+
+   Enable "single" mode, to run a single test.
+
+   Defaults to ``false``.
 
 .. option:: --yamltest, -y
 
+   Specify the full path to a YAML test specification.
+
 .. option:: --casedef, -d
+
+   Specify the full path to the Python module that implements the case
+   definition.
 
 Parallelism Options
 ~~~~~~~~~~~~~~~~~~~
 
+In most cases, running suites of tests serially will be more efficient
+than running tests in parallel given the overhead of the parallelism
+strategies and the typical workloads of these test
+suites. Additionally, for very large test suites you may find similar
+or better results and better control by splitting the test suite into
+parts and running each suite concurrently using an external tool.
+
+Nevertheless, ``dtf`` implements two distinct approaches to parallel
+test operations:
+
+- :mod:`python:multiprocessing`, which uses a pool of distinct Python
+  processes as a worker queue, and distributes tests to that
+  pool. This increases parallelism and is not subject to a bottleneck
+  created by Python's interpreter lock, although generally the overhead
+  for the process worker queue is high.
+
+- :mod:`python:threading`, which uses a pool of Python threads within
+  a single thread process. The overhead for the thread pool is lower
+  than the overhead required by the process worker pool; and the time
+  consuming portion of many tests' workload (i.e. file i/o and hash
+  computation,) is well suited to threads.
+
 .. option:: --multi, -m
 
+   Specify either ``thread`` or ``process``. Controls the mechanism of
+   parallelism.
+
 .. option:: --jobs, -j
+
+   Specify the size of the thread or worker pool. Defaults to
+   ``2``. Should not typically exceed the number of processors, though
+   thread pools may be slightly larger as needed.
+
+Additional Resources
+--------------------
+
+For more information on the use and operation of ``dtf`` see
+:doc:`/tutorial`. ``dtf`` itself is fully documented, if you're
+interested in the implementation or operations details see the
+:doc:`API Documentation </api>`.
