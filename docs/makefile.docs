@@ -40,8 +40,6 @@ $(STAGEDIR):$(BUILDDIR)/publish
 	@touch $(CURDIR)/source/index.txt
 	@echo [build]: touched file to ensure clean build
 
-test: 
-	@echo $(STAGEDIR)
 #
 # PDF Build System
 #

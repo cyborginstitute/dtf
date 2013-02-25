@@ -1,18 +1,21 @@
+import dtf
+
 from setuptools import setup
 from sys import version_info
 
 REQUIRES = ['pyyaml', 'threadpool']
-
 if version_info < (2, 7):
     # no argparse in 2.6 standard
     REQUIRES.append('argparse')
+
+
 
 setup(
     name='dtf',
     maintainer='tychoish',
     maintainer_email='sam@tychoish.com',
     description='Documentation Testing Framework',
-    version='0.2-dev',
+    version=dtf.__version__,
     license='Apache',
     url='http://cyborginstitute.org/projects/dtf',
     packages=['dtf'],

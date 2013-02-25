@@ -22,6 +22,5 @@ $(BUILDDIR)/publish:$(BUILDDIR)/dirhtml
 	@echo "[build]: migrated '$<' to '$@'"
 
 -include $(BUILDDIR)/makefile.intersphinx
-
 $(BUILDDIR)/makefile.intersphinx:bin/intersphinx.py bin/makefile_builder.py $(BUILDDIR) conf.py
 	@$(PYTHONBIN) $< $@

@@ -30,7 +30,8 @@ master_doc = 'index'
 project = u'dtf, Documentation Test Framework'
 copyright = u'2012-2013, Contributors'
 
-version = '1.0'
+import dtf
+version = dtf.__version__
 release = version
 
 exclude_patterns = []

@@ -13,3 +13,4 @@ source/includes/table-*.rst
 dist*
 *.egg-info
 docs/build
+TAGS
