@@ -293,7 +293,6 @@ class TestRunner(object):
         :attr:`~core.TestRunner.test_specs`, which is itself a dict
         representation of the test spec.
         """
-
         func(name, self.test_specs[name])
 
     def _add_to_queue(self, name, func):
@@ -305,7 +304,6 @@ class TestRunner(object):
         Appends a three-tuple to the :attr:`~core.TestRunner.queue`
         list, that :mod:`dtf`.
         """
-
         self.queue.append((func, name, self.test_specs[name]))
 
     def load(self):
@@ -315,7 +313,6 @@ class TestRunner(object):
         *Not Implemented in the base class.* All sub-classes must
         implement :meth:`~core.TestRunner.load()`.
         """
-
         raise NotImplementedError('TestRunner is a base class. Instantiate one of its sub-classes or implement a load().')
 
     def run(self):
@@ -325,7 +322,6 @@ class TestRunner(object):
         *Not Implemented in the base class.* All sub-classes must
         implement :meth:`~core.TestRunner.run()`.
         """
-
         raise NotImplementedError('TestRunner is a base class. Instantiate one of its sub-classes or implement a run().')
 
 class SingleTestRunner(TestRunner):
@@ -432,90 +428,3 @@ class SuiteTestRunner(MultiTestRunner):
 
         for test in self.test_specs:
             self._run(test, self.case_definition.get(self.test_specs[test]['type']))
-
-class ThreadedTestRunner(MultiTestRunner):
-    """
-    Uses the :mod:`threadpool` module to run a suite of tests with a pool of
-    threads. This is the ideal modality for suites with workloads that spend the
-    most of the time reading files and computing hashes, which may be common for
-    some suites. See :class:`~core.ProcessTestRunner()` for an alternate
-    parallelism strategy.
-    """
-    def __init__(self, test_paths=[], pool_size=2):
-        """
-        :param list test_paths: Defaults to an empty list. Passes through to
-                                :attr:`~core.TestRunner.test_paths`.
-
-        :param int pool_size: Defaults to ``2``. The size of the thread pool to
-                              use to process tests.
-        """
-        super(ThreadedTestRunner, self).__init__(test_paths)
-        self.pool_size = pool_size
-        "The size of the worker thread pool used to run tests."
-
-    def run(self):
-        """
-        Runs all tests in the :attr:`~core.TestRunner.queue` list using a thread
-        pool to run all tests concurrently.
-
-        Imports the :mod:`threadpool` module, which is an external dependency,
-        at will fall back to using :class:`~core.SuiteTestRunner()` if
-        :mod:`threadpool` isn't available.
-        """
-        try:
-            import threadpool
-        except ImportError:
-            print('[dtf]: "threadpool" module not installed, falling back to serial mode.')
-            t = SuiteTestRunner()
-            t.run(definitions)
-            return True
-
-        pool = threadpool.ThreadPool(self.pool_size)
-
-        for j in self.queue:
-            pool.putRequest(threadpool.WorkRequest(self.case_definition.get(j[0]), (j[1], j[2])))
-
-        import time
-        time.sleep(0.01)
-        pool.wait()
-
-class ProcessTestRunner(MultiTestRunner):
-    """
-    Uses the :class:`~multiprocessing.Pool()` class within the standard
-    :mod:`multiprocessing` module to run tests in parallel. Functionally
-    equivelent to :class:`~core.ThreadedTestRunner()`, without the fallback
-    possibility. 
-
-    Theoretically the :mod:`multiprocessing` approach has more overhead than
-    :mod:`threading`; however, in cases where the performance bottlenecks are
-    due to the interpreter lock, this approach may afford better performance.
-    """
-
-    def __init__(self, test_paths=[], pool_size=2):
-        """
-        :param list test_paths: Defaults to an empty list. Passes through 
-                                to :attr:`~core.TestRunner.test_paths`.
-
-        :param int pool_size: Defaults to ``2``. The size of the worker pool to
-                              use to run tests.
-        """
-
-        super(ProcessTestRunner, self).__init__(test_paths)
-        self.pool_size = pool_size
-        "The size of the worker process pool used to run tests."
-
-    def run(self):
-        """
-        Runs all tests in :attr:`~core.TestRunner.queue` using a pool of
-        independent Python processes to run all tests concurrently.
-        """
-
-        from multiprocessing import Pool
-
-        p = Pool(processes=self.pool_size)
-
-        for j in self.queue:
-            p.apply_async(self.case_definition.get(j[0]), (j[1], j[2]))
-
-        p.close()
-        p.join()

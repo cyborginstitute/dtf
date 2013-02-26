@@ -1,0 +1,7 @@
+=======================================
+:mod:`multi` -- Parallel Test Execution
+=======================================
+
+.. automodule:: multi
+   :members:
+   :private-members:

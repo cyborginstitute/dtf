@@ -3,7 +3,7 @@ import dtf
 from setuptools import setup
 from sys import version_info
 
-REQUIRES = ['pyyaml', 'threadpool']
+REQUIRES = ['pyyaml', 'threadpool', 'gevent']
 if version_info < (2, 7):
     # no argparse in 2.6 standard
     REQUIRES.append('argparse')

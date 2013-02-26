@@ -1,1 +1,3 @@
-PyYaml
+pyyaml
+threadpool
+gevent

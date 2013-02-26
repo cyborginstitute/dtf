@@ -15,7 +15,11 @@
 
 import yaml
 
-from dtf import VERBOSE, FATAL, PASSING
+try:
+    from dtf import VERBOSE, FATAL, PASSING
+except ImportError:
+    from dtf.dtf import VERBOSE, FATAL, PASSING
+
 from err import DtfException, DtfTestException, DtfNotImplemented
 
 class DtfCase(object):

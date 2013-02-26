@@ -107,7 +107,7 @@ suites. Additionally, for very large test suites you may find similar
 or better results and better control by splitting the test suite into
 parts and running each suite concurrently using an external tool.
 
-Nevertheless, ``dtf`` implements two distinct approaches to parallel
+Nevertheless, ``dtf`` provides the following approaches to parallel
 test operations:
 
 - :mod:`python:multiprocessing`, which uses a pool of distinct Python
@@ -122,16 +122,22 @@ test operations:
   consuming portion of many tests' workload (i.e. file i/o and hash
   computation,) is well suited to threads.
 
+- gevent's :mod:`~gevent:threadpool` which "green threads" and an
+  event loop to provide a more lightweight event-driven concurrency
+  mechanism. Provides similar benefits as the threaded approach with
+  significantly better overhead.
+
 .. option:: --multi, -m
 
-   Specify either ``thread`` or ``process``. Controls the mechanism of
+   Specify ``thread``, ``process`` or ``event``. Controls the mechanism of
    parallelism.
 
 .. option:: --jobs, -j
 
    Specify the size of the thread or worker pool. Defaults to
    ``2``. Should not typically exceed the number of processors, though
-   thread pools may be slightly larger as needed.
+   thread pools and especially event worker pools may be slightly
+   larger as needed.
 
 Additional Resources
 --------------------

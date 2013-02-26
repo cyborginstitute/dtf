@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 # TODO make stand alone operation work with installed dtf
 try:

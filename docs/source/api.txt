@@ -24,6 +24,7 @@ Resources
 Additionally, :mod:`dtf` has the following external dependencies, both
 from the Python standard library and 3rd party packages.
 
+- `PyYaml <http://pyyaml.org/>`_
 - `threadpool <http://pypi.python.org/pypi/threadpool>`_
 - `multiprocessing <http://docs.python.org/2/library/multiprocessing.html>`_
-- `PyYaml <http://pyyaml.org/>`_
+- `gevent <http://www.gevent.org/>`_

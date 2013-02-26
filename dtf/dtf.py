@@ -23,10 +23,10 @@ See :doc:`/man/dtf` for complete documentation of the command-line
 interface of ``dtf``.
 """
 
-# internal imports
 from utils import expand_tree, get_name
-from core import SingleCaseDefinition, MultiCaseDefinition
-from core import SingleTestRunner, SuiteTestRunner, ProcessTestRunner, ThreadedTestRunner
+from core import SingleCaseDefinition, MultiCaseDefinition, \
+     SingleTestRunner, SuiteTestRunner
+from multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
 
 import argparse
 import sys
@@ -119,6 +119,8 @@ def run_many(case_paths=['cases/'], test_paths=['tests/'], multi=None, jobs=2):
         t = ThreadedTestRunner(test_paths, jobs)
     elif multi == 'process':
         t = ProcessTestRunner(test_paths, jobs)
+    elif multi == 'event':
+        t = EventTestRunner(test_paths, jobs)
 
     t.load()
     t.definitions(dfn.cases)
