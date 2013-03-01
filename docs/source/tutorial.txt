@@ -78,7 +78,7 @@ invocations: ::
 
    dtf --single --casedef buildscripts/dtf/equality.py --yamltest t/equality_test0.yaml
 
-In short form, you can express this as:
+In short form, you can express this as: ::
 
    dtf -s -d buildscripts/dtf/equality.py -y t/equality_test0.yaml
 
