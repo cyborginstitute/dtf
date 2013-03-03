@@ -1,4 +1,7 @@
-from cases import DtfCase
+try:
+    from cases import DtfCase
+except ImportError:
+    from dtf.cases import DtfCase
 
 class DtfInequality(DtfCase):
     def test(self):

@@ -3,14 +3,12 @@ import yaml
 
 # TODO make stand alone operation work with installed dtf
 try:
-    from cases import PASSING
-    import dtf
+    from dtf import PASSING
 except ImportError:
     import sys
     import os
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from cases import PASSING
-    import dtf
+    from dtf.dtf import PASSING
 
 
 class DtfPaired(DtfChange):

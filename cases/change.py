@@ -3,13 +3,13 @@ import os
 
 # TODO make stand alone operation work with installed dtf
 try:
-    from cases import DtfCase, PASSING
-    import dtf
+    from cases import DtfCase
+    from dtf import PASSING
 except ImportError:
     import sys
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from cases import DtfCase, PASSING
-    import dtf
+    from dtf.cases import DtfCase
+    from dtf.dtf import PASSING
 
 class DtfChange(DtfCase):
     @staticmethod

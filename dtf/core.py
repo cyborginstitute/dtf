@@ -417,7 +417,6 @@ class SuiteTestRunner(MultiTestRunner):
 
         Runs all tests in :attr:`~core.TestRunner.test_specs` sequentially.
         """
-
         if definitions is None and not self.case_definition:
             raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
         elif definitions is None:

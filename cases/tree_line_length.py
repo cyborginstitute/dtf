@@ -1,7 +1,11 @@
-#!/usr/bin/python
+try:
+    from cases import DtfCase
+    from utils import expand_tree
+except ImportError:
+    from dtf.cases import DtfCase
+    from dtf.utils import expand_tree
 
-from cases import DtfCase
-from utils import expand_tree
+    
 from line_length import DtfLineLength
 import dtf
 

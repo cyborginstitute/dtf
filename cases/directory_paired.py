@@ -4,12 +4,10 @@ import os
 # TODO make stand alone operation work with installed dtf
 try:
     from cases import PASSING
-    import dtf
 except ImportError:
     import sys
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from cases import PASSING
-    import dtf
+    from dtf.dtf import PASSING
 
 class DtfDirectoryPaired(DtfChange):
     def test(self, a=False, b=False):

@@ -49,9 +49,10 @@ def interface():
 
     # options for running larger test suites.
     parser.add_argument('--casedir', '-c', action='append',
-                        default=['cases/'], help='directory containing python test implementations. you may specify multiple times.')
+                        help='directory containing python test implementations. you may specify multiple times.')
     parser.add_argument('--testdir', '-t', action='append',
-                        default=['tests/'], help='directory containing yaml test implementaitons. you may specify multiple times.')
+                        help='directory containing yaml test implementaitons. you may specify multiple times.')
+
 
     # options for single test running operation.
     parser.add_argument('--single', '-s', action='store_true',
@@ -172,8 +173,16 @@ else:
     SINGLE = user_input.single
     YAMLTEST = user_input.yamltest
     CASEDEF = user_input.casedef
-    CASEDIR = user_input.casedir
-    TESTDIR = user_input.testdir
+
+    if user_input.casedir is None:
+        CASEDIR = ['cases/']
+    else:
+        CASEDIR = user_input.casedir
+
+    if user_input.testdir is None:
+        TESTDIR = ['tests/']
+    else:
+        TESTDIR = user_input.testdir
         
 def main():
     """

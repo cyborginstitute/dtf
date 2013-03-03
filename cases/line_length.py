@@ -1,8 +1,11 @@
 #!/usr/bin/python
 
-from cases import DtfCase
-from utils import expand_tree
-import dtf
+try:
+    from cases import DtfCase
+    from utils import expand_tree
+except:
+    from dtf.cases import DtfCase
+    from dtf.utils import expand_tree
 
 class DtfLineLength(DtfCase):
     @staticmethod
