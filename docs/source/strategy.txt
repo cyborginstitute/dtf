@@ -1,7 +1,148 @@
-============================
-Consistency Testing Strategy
-============================
+===========================================
+Consistency Testing Strategy and Background
+===========================================
 
-`Bug #53 <https://issues.cyborginstitute.net/show_bug.cgi?id=53>`_
-exists to track progress and work on this page, which will be complete
-in time for the next release.
+.. note:: 
+   
+   This essay attempts to explain the origins, purpose, and use of
+   ``def``, and does not dictate any particular usage pattern, but may
+   be a good place to get started if you're interested in automating
+   testing of a documentation or similar resource.
+
+   The design of ``dtf`` grows out of my experiences with managing
+   and editing a large (multi-hundreds of thousands of words, hundreds
+   of files) documentation resource, and is above all a tool to help
+   facilitate and automate many of the tasks and checks that
+   would otherwise require manual operation and checking.
+
+   Nevertheless, the testing model that ``dtf`` facilitates may be
+   applicable for other classes of projects, or for organizing and
+   managing larger scale functional or integration test suites.
+
+An Introduction to Testing and Consistency Testing for Documentation
+--------------------------------------------------------------------
+
+Part of the challenge of large documentation projects is maintaining
+resource-wide consistency given the timescales needed to construct
+documentation, the usage patterns, and the lack of tools to help
+ensure stylistic consistency or correctness. 
+
+There are a number of different kinds of consistency that documentation
+projects must satisfy: consistency with vocabulary and usage style,
+consistency with product development, and internal factual and
+organization consistency. While these consistency problems all
+require different kinds attention and work, without any kind of
+automation efforts to ensure consistency would:
+
+- establish a clear style guide to synchronize vocabulary and
+  usage conventions.
+
+- have a multi-phase editing processes using group of peers, senior
+  writers to ensure style-guide compliance.
+
+- use documentation tool chains that provide flexible
+  "single-sourcing" abilities so that pieces of information only
+  appear once in the source material, to minimize the impact of
+  product changes on the documentation resource.
+  
+- incorporate documentation tracking into the feature development,
+  specification, and testing processes to ensure that documentation
+  remains consistent with product development.
+
+These strategies help, but they don't adapt well to growth of the
+writing team, the size of a documentation resource, or ongoing product
+development (i.e. "they don't scale.") As a result, over time
+consistency loosens and it becomes more difficult to maintain the
+resource and information/knowledge debt accumulates, with all of the
+same challenges and dangers as technical debt.
+
+For software project having reliable and easy to run test suites helps
+ease some of this burden. The automated testing can detect 
+interface compatibility problems, unit testing can ensure
+implementation correctness, and functional/integration tests can
+ensure that larger systems function as expected. 
+
+Typically documentation only has minimal amount of regular testing,
+which is typically limited to the validation that documentation
+rendering tools provide. Consistency then, will help documentation
+projects ensure that:
+
+- that the source materials comply with basic formatting and syntactic
+  conventions: line length, cross referencing standards and practices,
+  organizational and structural conventions.
+  
+- that necessarily redundant sections change in parallel. For example,
+  if you document a function in API documentation and in quick
+  reference material and must rephrase the same content, that you can
+  ensure that if one piece of content changes, a writer must ensure
+  that both continue to convey the same pieces of information.   
+
+- basic tests to ensure consistency with product changes, and
+  documentation consistency across versions or releases of a product
+  or API.
+
+- the output of automated vocabulary, spelling, and diction testing
+  are properly scoped to specific sections of source and content
+  sections.
+
+``dtf`` and Consistency Testing Frameworks
+------------------------------------------
+
+Fundamentally ``dtf`` is just a test runner. The core modules
+implement a reasonably straightforward system for discovering and
+running tests written in Python. However, rather than running a large
+number of distinct tests, and facilitating the implementation of
+custom tests to validate certain behaviors or conditions, ``dtf``
+turns the existing paradigm on its side: 
+
+- each "consistency test" has two components a programmatic
+  implementation that describes the conditions of the test, and a
+  description of the specific context that you want to enforce the
+  condition.
+
+  If the test conditions, or the "case," is the business logic, then the
+  context, or the "test" is the data. Running tests with ``dtf`` is a
+  process of applying the business logic to all of the test data.
+  
+- in general any project will have a small to medium sized collection
+  of different kinds of consistency checks, and a large collection of
+  tests, or situations that enforce that check.
+
+- while implementation of a condition may require some programming
+  ability, enforcing an existing test in a new situation should not
+  require *any* programming ability.
+
+In practice, most case definitions for ``dtf`` tests are a couple
+hundred lives of Python code or less, and tests are YAML files with
+about half a dozen fields or more depending on the case. While there
+are no records of the performance of truly huge ``dtf`` test suites,
+the current implementation includes a number of possibilities for
+running tests in parallel, and all tested performance has been
+exceptional. These features make the following usage patterns viable: 
+
+- ``dtf`` tests can run regularly as part of the development cycles to
+  prevent regressions. If tests run efficiently, writers can run a
+  test suite regularly to help ensure quality. In this way, the right
+  set of ``dtf`` tests can function like acceptance test.
+
+- ``dtf`` suites are easy to extend by adding new YAML test
+  specifications that enforce existing logic in new situations. If
+  it's easy to increase coverage, then test suite maintenance incurs
+  more minimal maintenance costs.
+
+- ``dtf`` conditions and tests can wrap and customize various classes
+  of integration tests and other third party validations. For example,
+  ``dtf`` could run commands derived from examples in documentation to
+  ensure that the product doesn't drift from the documentation in
+  smaller harder to detect ways. 
+
+  Alternatively you may use ``dtf`` tests to wrap per-file or
+  per-directory configuration of natural language analysis tools and
+  process the results of these outputs (e.g. spelling, `style and
+  diction <http://www.gnu.org/software/diction/diction.html>`_.)
+
+For examples of case definitions see the examples in the ``dtf``
+source tree: `case definitions
+<https://github.com/cyborginstitute/dtf/tree/master/cases>`_. Also
+consider the corresponding `test specifications
+<https://github.com/cyborginstitute/dtf/tree/master/tests>`_.
