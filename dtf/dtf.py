@@ -23,10 +23,16 @@ See :doc:`/man/dtf` for complete documentation of the command-line
 interface of ``dtf``.
 """
 
-from utils import expand_tree, get_name
-from core import SingleCaseDefinition, MultiCaseDefinition, \
-     SingleTestRunner, SuiteTestRunner
-from multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
+try: 
+    from core import SingleCaseDefinition, MultiCaseDefinition, \
+                     SingleTestRunner, SuiteTestRunner
+    from multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
+    from utils import expand_tree, get_name
+except ImportError:
+    from dtf.core import SingleCaseDefinition, MultiCaseDefinition, \
+                         SingleTestRunner, SuiteTestRunner
+    from dtf.multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
+    from dtf.utils import expand_tree, get_name
 
 import argparse
 import sys
@@ -153,9 +159,9 @@ def run_one(case, test):
 
 # The following allows sphinx.ext.autodoc to parse this module.
 
-if sys.argv[0].rsplit('/', 1)[1] == 'sphinx-build':
+if sys.argv[0] == 'test.py' or sys.argv[0].rsplit('/', 1)[1] == 'sphinx-build':
     VERBOSE,  FATAL, PASSING, MULTI, JOBS, \
-    SINGLE, YAMLTEST, CASEDEF, CASEDIR, TESTDIR = [ None ] * 10
+      SINGLE, YAMLTEST, CASEDEF, CASEDIR, TESTDIR = [ None ] * 10
 else:
     user_input = interface()
     VERBOSE = user_input.verbose
@@ -168,7 +174,7 @@ else:
     CASEDEF = user_input.casedef
     CASEDIR = user_input.casedir
     TESTDIR = user_input.testdir
-
+        
 def main():
     """
     :meth:`main()` is the main entry point for the :doc:`dtf

@@ -29,9 +29,13 @@ import os
 from importlib import import_module
 
 # internal modules
-from utils import get_name, expand_tree, get_module_path
-from err import DtfDiscoveryException
-
+try: 
+    from utils import get_name, expand_tree, get_module_path
+    from err import DtfDiscoveryException
+except:
+    from dtf.utils import get_name, expand_tree, get_module_path
+    from dtf.err import DtfDiscoveryException
+    
 class CaseDefinition(object):
     """
     :param list case_paths: A list of paths that hold case
@@ -65,11 +69,6 @@ class CaseDefinition(object):
         case donations into the current :mod:`dtf` instance. Will not
         not load a case named ``__init__``.
         """
-
-        name = get_name(name)
-        """Processes the ``name`` argument using
-        :meth:`~utils.get_name()`, which removes the file extension
-        from ``name``"""
 
         if name == '__init__':
             pass
@@ -145,8 +144,6 @@ class SingleCaseDefinition(CaseDefinition):
 
         The fundamental operation uses :meth:`~core.CaseDefinition._load_case()`
         """
-
-        name = get_name(filename)
 
         if name in self.cases:
             pass

@@ -21,8 +21,11 @@ uniform, and good test performance is crucial for usability, :mod:`dtf` provides
 these options, largely for testing and research.
 """
 
-from core import MultiTestRunner 
-
+try: 
+    from core import MultiTestRunner 
+except:
+    from dtf.core import MultiTestRunner 
+    
 class PoolTestRunner(MultiTestRunner):
     """
     A :class:`~core.MultiTestRunner()` sub-class that initializes a single

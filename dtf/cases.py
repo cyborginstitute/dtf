@@ -1,4 +1,4 @@
-# Copyright 2012 Sam Kleinman
+# Copyright 2012-2013 Sam Kleinman
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 import yaml
 
 try:
-    from dtf import VERBOSE, FATAL, PASSING
+     from dtf import VERBOSE, FATAL, PASSING
+     from err import DtfException, DtfTestException, DtfNotImplemented
 except ImportError:
-    from dtf.dtf import VERBOSE, FATAL, PASSING
-
-from err import DtfException, DtfTestException, DtfNotImplemented
+     from dtf.dtf import VERBOSE, FATAL, PASSING
+     from dtf.err import DtfException, DtfTestException, DtfNotImplemented
 
 class DtfCase(object):
     """
@@ -98,25 +98,20 @@ class DtfCase(object):
         :param bool fatal:
 
             If ``true``, :meth:`~cases.DtfCase.validate()` will raise an
-            :exc:`~err.DtfException` rather than printing the failure message.
+            :exc:`~err.DtfException` rather than printing the failure message
+            for invalid tests..
 
         Checks the keys in each test specification to ensure that the test has
         the required keys.
         """
+        if keys is None:
+            if self.keys == []:
+                raise DtfException('must add required_keys to DtfCase subclasses.')
+            else: 
+                keys = self.keys
 
         if test_keys is None:
             test_keys = self.test_spec.keys()
-
-        if verbose is None:
-            verbose = VERBOSE
-
-        if fatal is None:
-            fatal = FATAL
-
-        if keys is None and self.keys is False:
-            raise DtfException('must add required_keys to DtfCase subclasses.')
-        else:
-            keys = self.keys
 
         t = True
         for key in keys:
@@ -133,7 +128,14 @@ class DtfCase(object):
             msg = ('[%s]: "%s" is not a valid "%s" test spec.'
                    % (self.name, self.test_spec['name'], self.test_spec['type']))
 
-        return self.response(result=t, msg=msg, verbose=verbose, fatal=fatal)
+        if verbose is None:
+            verbose = VERBOSE
+
+        if fatal is None:
+            fatal = FATAL
+
+        self.response(result=t, msg=msg, verbose=verbose, fatal=fatal)
+        return (t, msg, verbose, fatal)
 
     def dump(self, test_spec, path, keys=None):
         """
@@ -183,15 +185,22 @@ class DtfCase(object):
         elif result is False and fatal is True:
             raise DtfTestException(msg)
 
-    def msg(self, msg):
+    def msg(self, msg, verbose=None):
         """
         :param string message: A message to return.
 
         A helper function that returns a message, tagged with
         :attr:`~cases.DtfCase.name`, *if* :data:`~dtf.VERBOSE` is true.
         """
-        if VERBOSE:
-            print('[%s]: %s' % (self.name, msg))
+
+        o = '[%s]: %s' % (self.name, msg)
+        if verbose is None:
+            verbose = VERBOSE
+
+        if verbose is True: 
+            print(o)
+
+        return o
 
     def passing(self):
         """
@@ -203,7 +212,6 @@ class DtfCase(object):
 
         Raises :exc:`~err.DtfNotImplemented`. 
         """
-
         raise DtfNotImplemented("cases must implement the optional passing() method")
 
     def print_passing_spec(self):
