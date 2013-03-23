@@ -4,6 +4,9 @@ MAKEFILEARGS += -j
 # Publication system
 #
 
+DEFAULT_GOAL:all
+
+
 clean: 
 	-rm -rf build/*
 
@@ -13,6 +16,9 @@ setup:
 include makefile.docs
 include bin/makefile.compatibility 
 
+all:intersphinx publish
+
+dirhtml:intersphinx
 publish: $(BUILDDIR)/publish
 $(BUILDDIR)/dirhtml:dirhtml
 $(BUILDDIR)/publish:$(BUILDDIR)/dirhtml

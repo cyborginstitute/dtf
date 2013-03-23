@@ -50,6 +50,8 @@ testpypy:$(wildcard $(modsrc)*.py)
 
 docs:
 	@$(MAKE) -C docs/ html
+stage-docs:
+	@$(MAKE) -C ../institute/ stage push
 
 release:all gitpush
 	python setup.py sdist upload
