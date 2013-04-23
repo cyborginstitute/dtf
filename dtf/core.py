@@ -254,10 +254,11 @@ class TestRunner(object):
 
         with open(spec) as f:
             test = get_name(spec)
-            spec = yaml.load(f)
+            specs = yaml.load_all(f)
 
-            self.test_specs.update( { test: spec } )
-            self._add_to_queue(test, spec['type'])
+            for spec in specs:
+                self.test_specs.update( { test: spec } )
+                self._add_to_queue(test, spec['type'])
 
     def _load_tree(self, path):
         """
