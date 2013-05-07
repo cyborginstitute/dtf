@@ -23,16 +23,12 @@ See :doc:`/man/dtf` for complete documentation of the command-line
 interface of ``dtf``.
 """
 
-try: 
-    from core import SingleCaseDefinition, MultiCaseDefinition, \
+from __future__ import absolute_import
+
+from dtf.core import SingleCaseDefinition, MultiCaseDefinition, \
                      SingleTestRunner, SuiteTestRunner
-    from multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
-    from utils import expand_tree, get_name
-except ImportError:
-    from dtf.core import SingleCaseDefinition, MultiCaseDefinition, \
-                         SingleTestRunner, SuiteTestRunner
-    from dtf.multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
-    from dtf.utils import expand_tree, get_name
+from dtf.multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
+from dtf.utils import expand_tree, get_name
 
 import argparse
 import sys

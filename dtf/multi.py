@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """
 Provides additional :class:`~core.TestRunner()` classes that implement various
 parallel operation modes to run tests.
@@ -21,10 +22,9 @@ uniform, and good test performance is crucial for usability, :mod:`dtf` provides
 these options, largely for testing and research.
 """
 
-try: 
-    from core import MultiTestRunner 
-except:
-    from dtf.core import MultiTestRunner 
+from __future__ import absolute_import
+
+from dtf.core import MultiTestRunner 
     
 class PoolTestRunner(MultiTestRunner):
     """

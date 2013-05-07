@@ -20,6 +20,8 @@ a different base behavior test selection and running, use these
 classes as a starting point.
 """
 
+from __future__ import absolute_import
+
 # third-party modules
 import yaml
 
@@ -29,12 +31,8 @@ import os
 from importlib import import_module
 
 # internal modules
-try: 
-    from utils import get_name, expand_tree, get_module_path
-    from err import DtfDiscoveryException
-except:
-    from dtf.utils import get_name, expand_tree, get_module_path
-    from dtf.err import DtfDiscoveryException
+from dtf.utils import get_name, expand_tree, get_module_path
+from dtf.err import DtfDiscoveryException
     
 class CaseDefinition(object):
     """

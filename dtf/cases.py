@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import absolute_import
+
 import yaml
 
-try:
-     from dtf import VERBOSE, FATAL, PASSING
-     from err import DtfException, DtfTestException, DtfNotImplemented
-except ImportError:
-     from dtf.dtf import VERBOSE, FATAL, PASSING
-     from dtf.err import DtfException, DtfTestException, DtfNotImplemented
+from dtf.dtf import VERBOSE, FATAL, PASSING
+from dtf.err import DtfException, DtfTestException, DtfNotImplemented
 
 class DtfCase(object):
     """
