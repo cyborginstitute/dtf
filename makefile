@@ -1,7 +1,7 @@
 MAKEFLAGS += --no-print-directory
 
 .PHONY:docs
-all:tags docs test
+all:tags test docs
 
 tags:
 	@find . -name "*.py" | grep -v "\.\#" | etags --output TAGS -

@@ -1,4 +1,4 @@
-MAKEFILEARGS += -j 
+bMAKEFILEARGS += -j 
 
 #
 # Publication system
@@ -6,6 +6,7 @@ MAKEFILEARGS += -j
 
 DEFAULT_GOAL:all
 
+SPHINXOPTS = -c ./
 
 clean: 
 	-rm -rf build/*
