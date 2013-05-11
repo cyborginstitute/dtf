@@ -11,21 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # Part of the example distribution of DTF: https://pypi.python.org/pypi/dtf/
 
 import hashlib
 import os
 
 # TODO make stand alone operation work with installed dtf
-try:
-    from cases import DtfCase
-    from dtf import PASSING
-except ImportError:
-    import sys
-    sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from dtf.cases import DtfCase
-    from dtf.dtf import PASSING
+from dtf.cases import DtfCase
+from dtf.dtf import PASSING
 
 class DtfChange(DtfCase):
     @staticmethod
@@ -40,18 +34,18 @@ class DtfChange(DtfCase):
         if self.hash(self.test_spec['file']) == self.test_spec['hash']:
             r = True
 
-        if r is False: 
-            msg = ('[%s]: file named "%s" changed. Update other files as needed.' 
+        if r is False:
+            msg = ('[%s]: file named "%s" changed. Update other files as needed.'
                    % ( self.test_spec['name'], self.test_spec['file']))
         else:
-            msg = ('[%s]: file named "%s" is **not** changed. No further action required.' 
+            msg = ('[%s]: file named "%s" is **not** changed. No further action required.'
                    % ( self.test_spec['name'], self.test_spec['file']))
 
         return r, msg
 
     def passing(self):
         self.test_spec['hash'] = self.hash(self.test_spec['file'])
-        
+
         return yaml.dump(self.test_spec, default_flow_style=False)
 
 def main(name, test_spec):

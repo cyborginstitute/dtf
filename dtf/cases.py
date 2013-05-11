@@ -84,7 +84,7 @@ class DtfCase(object):
             A list of keys from the ``test_spec`` that the must be
             identical to or a superset of the keys in the ``keys``
             list. Defaults to the value of :attr:`test_spec.keys
-            <cases.dtf.test_spec>`. 
+            <cases.dtf.test_spec>`.
 
         :param bool verbose:
 
@@ -104,7 +104,7 @@ class DtfCase(object):
         if keys is None:
             if self.keys == []:
                 raise DtfException('must add required_keys to DtfCase subclasses.')
-            else: 
+            else:
                 keys = self.keys
 
         if test_keys is None:
@@ -163,14 +163,14 @@ class DtfCase(object):
 
     def response(self, result, msg, verbose=False, fatal=False):
         """
-        :param bool result: 
+        :param bool result:
 
-        :param msg string: 
+        :param msg string:
 
         :param bool verbose: Causes :meth:`~cases.DtfCases.response()` a
                              to ``False``.
 
-        :param bool fatal: Defaults to ``False``. 
+        :param bool fatal: Defaults to ``False``.
         """
 
         if result is True and verbose is True:
@@ -194,7 +194,7 @@ class DtfCase(object):
         if verbose is None:
             verbose = VERBOSE
 
-        if verbose is True: 
+        if verbose is True:
             print(o)
 
         return o
@@ -207,7 +207,7 @@ class DtfCase(object):
         take the ``test_spec`` for the current test and return a passing variant
         that the developer/writer can use to update a fixed test.
 
-        Raises :exc:`~err.DtfNotImplemented`. 
+        Raises :exc:`~err.DtfNotImplemented`.
         """
         raise DtfNotImplemented("cases must implement the optional passing() method")
 
@@ -227,7 +227,7 @@ class DtfCase(object):
         """
         A stub method for the :meth:`~cases.DtfCase.test()` method, that case
         definitions must implement.
-    
+
         :meth:`~cases.DtfCase.test()` should return a two-tuple that contains:
 
         0. A boolean that is ``True`` if the test passes and ``False`` if the
@@ -242,7 +242,7 @@ class DtfCase(object):
         """
         A helper method that orchestrates test operation. Takes no arguments and
         preforms the folloing operations:
-        
+
         1. Calls :meth:`~cases.DtfCase.validate()` method, passing
            :data:`~dtf.VEBOSE` and :data:`~dtf.FATAL` as appropriate.
 
@@ -260,4 +260,3 @@ class DtfCase(object):
         self.return_value = t[0]
 
         self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)
-

@@ -11,13 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # Part of the example distribution of DTF: https://pypi.python.org/pypi/dtf/
 
-try:
-    from cases import DtfCase
-except ImportError:
-    from dtf.cases import DtfCase
+from dtf.cases import DtfCase
 
 class DtfInequality(DtfCase):
     def test(self):

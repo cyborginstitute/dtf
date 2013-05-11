@@ -25,13 +25,15 @@ interface of ``dtf``.
 
 from __future__ import absolute_import
 
-from dtf.core import SingleCaseDefinition, MultiCaseDefinition, \
-                     SingleTestRunner, SuiteTestRunner
+import os.path
+import sys
+
 from dtf.multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
+from dtf.core import SingleCaseDefinition, MultiCaseDefinition, SingleTestRunner, SuiteTestRunner
 from dtf.utils import expand_tree, get_name
+from dtf.err import DtfMissingOptionalDependency
 
 import argparse
-import sys
 
 def interface():
     """
@@ -127,7 +129,13 @@ def run_many(case_paths=['cases/'], test_paths=['tests/'], multi=None, jobs=2):
 
     t.load()
     t.definitions(dfn.cases)
-    t.run()
+
+    try:
+        t.run()
+    except DtfMissingOptionalDependency as err:
+        print("ERROR: " + err.msg)
+        exit(1)
+
 
 def run_one(case, test):
     """
@@ -179,7 +187,7 @@ else:
         TESTDIR = ['tests/']
     else:
         TESTDIR = user_input.testdir
-        
+
 def main():
     """
     :meth:`main()` is the main entry point for the :doc:`dtf

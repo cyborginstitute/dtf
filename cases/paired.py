@@ -11,20 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # Part of the example distribution of DTF: https://pypi.python.org/pypi/dtf/
 
 from change import DtfChange
 import yaml
 
 # TODO make stand alone operation work with installed dtf
-try:
-    from dtf import PASSING
-except ImportError:
-    import sys
-    import os
-    sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from dtf.dtf import PASSING
+from dtf.dtf import PASSING
 
 
 class DtfPaired(DtfChange):

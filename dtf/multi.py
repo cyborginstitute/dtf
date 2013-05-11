@@ -24,8 +24,9 @@ these options, largely for testing and research.
 
 from __future__ import absolute_import
 
-from dtf.core import MultiTestRunner 
-    
+from dtf.err import DtfMissingOptionalDependency
+from dtf.core import MultiTestRunner
+
 class PoolTestRunner(MultiTestRunner):
     """
     A :class:`~core.MultiTestRunner()` sub-class that initializes a single
@@ -59,7 +60,10 @@ class ThreadedTestRunner(PoolTestRunner):
         Runs all tests in the :attr:`~core.TestRunner.queue` list using a thread
         pool to run all tests concurrently.
         """
-        import threadpool
+        try:
+            import threadpool
+        except ImportError:
+            raise DtfMissingOptionalDependency('You must install the optional `threadpool` to use the tread-based multi-test runner.')
 
         pool = threadpool.ThreadPool(self.pool_size)
 
@@ -74,7 +78,7 @@ class ProcessTestRunner(PoolTestRunner):
     Uses the :class:`~multiprocessing.Pool()` class within the standard
     :mod:`multiprocessing` module to run tests in parallel. Functionally
     equivelent to :class:`~multi.ThreadedTestRunner()`, without the fallback
-    possibility. 
+    possibility.
 
     Theoretically the :mod:`multiprocessing` approach has more overhead than
     :mod:`threading`; however, in cases where the performance bottlenecks are
@@ -108,8 +112,12 @@ class EventTestRunner(PoolTestRunner):
         Runs all tests in :attr:`~core.TestRunner.queue` using a pool of
         greenlets to run tests concurrently.
         """
-        import gevent
-        from gevent.pool import Pool
+
+        try:
+            import gevent
+            from gevent.pool import Pool
+        except ImportError:
+            raise DtfMissingOptionalDependency('You must install the optional `gevent` to use the event-based multi-test runner.')
 
         p = Pool(self.pool_size)
 

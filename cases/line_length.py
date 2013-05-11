@@ -11,22 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# 
+#
 # Part of the example distribution of DTF: https://pypi.python.org/pypi/dtf/
 
-try:
-    from cases import DtfCase
-    from utils import expand_tree
-except:
-    from dtf.cases import DtfCase
-    from dtf.utils import expand_tree
+from dtf.cases import DtfCase
+from dtf.utils import expand_tree
 
 class DtfLineLength(DtfCase):
     @staticmethod
     def check_line(line, max_length):
-        if len(line) > max_length: 
+        if len(line) > max_length:
             return True
-        else: 
+        else:
             return False
 
     def check_file(self, source_file, p=True):
@@ -38,7 +34,7 @@ class DtfLineLength(DtfCase):
                     p = False
                     break
 
-        if p is False: 
+        if p is False:
             return p, ln
         else:
             return p, None
@@ -46,13 +42,13 @@ class DtfLineLength(DtfCase):
     def test(self):
         result = self.check_file(self.test_spec['file'])
 
-        if result[0] is True: 
-            msg = ('[%s]: %s has no lines longer than %s characters.' 
+        if result[0] is True:
+            msg = ('[%s]: %s has no lines longer than %s characters.'
                    % (self.name, self.test_spec['file'], self.test_spec['max_length']))
         else:
-            msg = ('[%s]: line %s in "%s" is longer than %s characters.' 
+            msg = ('[%s]: line %s in "%s" is longer than %s characters.'
                    % (self.name, result[1], self.test_spec['file'], self.test_spec['max_length']))
-            
+
         return result[0], msg
 
 def main(name, test_spec):
