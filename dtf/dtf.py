@@ -27,6 +27,9 @@ from __future__ import absolute_import
 
 import os.path
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 from dtf.multi import ProcessTestRunner, ThreadedTestRunner, EventTestRunner
 from dtf.core import SingleCaseDefinition, MultiCaseDefinition, SingleTestRunner, SuiteTestRunner
@@ -44,6 +47,14 @@ def interface():
     """
 
     parser = argparse.ArgumentParser("Document Testing Framework")
+
+    # general operations
+    parser.add_argument('--logfile', '-l', action='store', default=False,
+                        help='Specify a file to log output. By default, dtf only logs critical errors and warnings. Use --debug and --info for more verbose logging.')
+    parser.add_argument('--info', action='store_true', default=False,
+                        help='Increases internal operational logging verbosity')
+    parser.add_argument('--debug', action='store_true', default=False,
+                        help='Enables the most verbose logging of internal operations.')
 
     # options for running larger test suites.
     parser.add_argument('--casedir', '-c', action='append',
@@ -115,60 +126,96 @@ def run_many(case_paths=['cases/'], test_paths=['tests/'], multi=None, jobs=2):
     The options to :meth:`run_many()` are controllable using the
     :doc:`command line options </man/dtf>`.
     """
+    logger.debug('creating case definition object. loading cases from "{0}"'.format(case_paths))
     dfn = MultiCaseDefinition(case_paths)
+
+    logger.debug('loading cases.')
     dfn.load()
+    logger.debug('successfully loaded cases.')
 
     if multi is None:
+        logger.info('configuring test runner to execute tests serially.')
         t = SuiteTestRunner(test_paths)
     elif multi == 'thread':
+        logger.info('configuring test runner to execute tests using a threadpool. {0} workers'.format(str(jobs)))
         t = ThreadedTestRunner(test_paths, jobs)
     elif multi == 'process':
+        logger.info('configuring test runner to execute tests using a multiprocess pool {0} workers.'.format(str(jobs)))
         t = ProcessTestRunner(test_paths, jobs)
     elif multi == 'event':
+        logger.info('configuring test runner to execute tests using a gevent-based thread pool. {0} workers.'.format(str(jobs)))
         t = EventTestRunner(test_paths, jobs)
+    logger.debug('test runner configured.')
 
+
+    logger.debug('loading tests.')
     t.load()
+    logger.debug('loaded tests.')
+
+    logger.debug('passing case definitions to test runner...')
     t.definitions(dfn.cases)
+    logger.debug('cases loaded in test runner.')
 
     try:
+        logger.debug('starting test run.')
         t.run()
+        logger.debug('test run complete.')
     except DtfMissingOptionalDependency as err:
-        print("ERROR: " + err.msg)
+        logger.error('encountered a missing optional dependency attempting to run tests. Install {0} or use a different builder'.format(err.msg))
         exit(1)
 
 
 def run_one(case, test):
     """
-    :param path case_paths:
+    :param path case:
 
        The path to a specific :term:`case` (i.e. Python module,)
        relative to the current working directory.
 
-    :param path test_paths:
+    :param path test:
 
        The path to a single :term:`test` (i.e. a test definition in
        YAML format,) relative to the current working directory.
 
     Use :meth:`run_one()` to run a single, specific ``dtf`` test.
     """
-
+    logger.debug('creating case definition object.')
     dfn = SingleCaseDefinition()
-    dfn.load(test)
 
+    logger.debug('loading case {0}.'.format(case))
+    dfn.load(case)
+    logger.debug('loaded {0} case.'.format(case))
+
+    logger.info('configuring test runner object.')
     t = SingleTestRunner()
-    t.load(case)
+    logger.debug('loading test {0}.'.format(test))
+    t.load(test)
+    logger.debug('test {0} successfully loaded.'.format(test))
+    logger.info('test runner object configured.')
+
+    logger.debug('passing case definitions to test runner.')
     t.definitions(dfn.cases)
+    logger.debug('test runner ready to .')
+
+    logger.debug('starting test run.')
     t.run(get_name(case))
+    logger.debug('test run complete.')
 
 ######################################################################
-
+#
 # The following allows sphinx.ext.autodoc to parse this module.
 
 if sys.argv[0] == 'test.py' or sys.argv[0].rsplit('/', 1)[1] == 'sphinx-build':
     VERBOSE,  FATAL, PASSING, MULTI, JOBS, \
       SINGLE, YAMLTEST, CASEDEF, CASEDIR, TESTDIR = [ None ] * 10
+
+    logging.basicConfig(level=logging.CRITICAL)
+    logging.info('running in non-interactive mode. only possible for tests and doc parsing')
 else:
+    logger.debug('calling user interface to collect input on command line.')
     user_input = interface()
+
+
     VERBOSE = user_input.verbose
     FATAL = user_input.fatal
     PASSING = user_input.passing
@@ -188,6 +235,24 @@ else:
     else:
         TESTDIR = user_input.testdir
 
+    logger.info('set default test and case dirs')
+
+    if user_input.debug == True:
+        log_level = logging.DEBUG
+    elif user_input.info == True:
+        log_level = logging.INFO
+    else:
+        log_level = logging.WARNING
+
+    logger.debug('configuring log level based on user input.')
+
+    if user_input.logfile is not False:
+       logging.basicConfig(filename=user_input.logfile, level=log_level)
+    else:
+       logging.basicConfig(level=log_level)
+
+    logger.info('configuring logger. level {0}'.format(log_level))
+
 def main():
     """
     :meth:`main()` is the main entry point for the :doc:`dtf
@@ -198,9 +263,11 @@ def main():
     """
 
     if SINGLE is False:
+        logger.info('running a test suite.')
         run_many(CASEDIR, TESTDIR, MULTI, JOBS)
     else:
-        run_one(YAMLTEST, CASEDEF)
+        logger.info('running {0} test with case {1}'.format(YAMLTEST, CASEDEF))
+        run_one(CASEDEF, YAMLTEST)
 
 if __name__ == '__main__':
     main()

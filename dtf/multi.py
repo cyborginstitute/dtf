@@ -63,7 +63,7 @@ class ThreadedTestRunner(PoolTestRunner):
         try:
             import threadpool
         except ImportError:
-            raise DtfMissingOptionalDependency('You must install the optional `threadpool` to use the tread-based multi-test runner.')
+            raise DtfMissingOptionalDependency('threadpool')
 
         pool = threadpool.ThreadPool(self.pool_size)
 
@@ -117,7 +117,7 @@ class EventTestRunner(PoolTestRunner):
             import gevent
             from gevent.pool import Pool
         except ImportError:
-            raise DtfMissingOptionalDependency('You must install the optional `gevent` to use the event-based multi-test runner.')
+            raise DtfMissingOptionalDependency('gevent')
 
         p = Pool(self.pool_size)
 
