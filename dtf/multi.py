@@ -27,6 +27,10 @@ from __future__ import absolute_import
 from dtf.err import DtfMissingOptionalDependency
 from dtf.core import MultiTestRunner
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 class PoolTestRunner(MultiTestRunner):
     """
     A :class:`~core.MultiTestRunner()` sub-class that initializes a single
@@ -46,6 +50,7 @@ class PoolTestRunner(MultiTestRunner):
         super(PoolTestRunner, self).__init__(test_paths)
         self.pool_size = pool_size
         "The size of the worker thread pool used to run tests."
+        logger.info('initiated a pool-based TestRunner instance. Pool Size: {0}'.format(str(pool_size)))
 
 class ThreadedTestRunner(PoolTestRunner):
     """
@@ -65,12 +70,15 @@ class ThreadedTestRunner(PoolTestRunner):
         except ImportError:
             raise DtfMissingOptionalDependency('threadpool')
 
+        logger.info('running tests in using a threadpool.')
+
         pool = threadpool.ThreadPool(self.pool_size)
 
         for j in self.queue:
             job = threadpool.WorkRequest(self.case_definition.get(j[0]), args=(j[1], j[2]))
             pool.putRequest(job)
 
+        logger.info('pool seeded. waiting for workers to complete.')
         pool.wait()
 
 class ProcessTestRunner(PoolTestRunner):
@@ -94,11 +102,18 @@ class ProcessTestRunner(PoolTestRunner):
 
         p = Pool(self.pool_size)
 
+        logger.info('running tests in using multiprocesing worker pool.')
+
         for j in self.queue:
             p.apply_async(self.case_definition.get(j[0]), (j[1], j[2]))
 
+            logger.debug("adding {0} to worker queue".format(j[1]))
+
+        logger.info('closing worker queue.')
         p.close()
+        logger.info('waiting for jobs to complete.')
         p.join()
+        logger.info('worker queue complete.')
 
 class EventTestRunner(PoolTestRunner):
     """
@@ -112,14 +127,16 @@ class EventTestRunner(PoolTestRunner):
         Runs all tests in :attr:`~core.TestRunner.queue` using a pool of
         greenlets to run tests concurrently.
         """
-
         try:
             import gevent
             from gevent.pool import Pool
+            logger.debug('successfully imported gevent.')
         except ImportError:
             raise DtfMissingOptionalDependency('gevent')
 
+        logger.info('running dtf tests using a gevent-based (micro) thread pool.')
         p = Pool(self.pool_size)
 
         for j in self.queue:
+            logger.debug('adding {0} to the job queue'.format(j[1]))
             p.spawn(self.case_definition.get(j[0]), j[1], j[2])

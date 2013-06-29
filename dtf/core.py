@@ -1,4 +1,4 @@
-# Copyright 2012 Sam Kleinman
+# Copyright 2012-2013 Sam Kleinman
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ import yaml
 import sys
 import os
 from importlib import import_module
+import logging
+
+logger = logging.getLogger(__name__)
 
 # internal modules
 from dtf.utils import get_name, expand_tree, get_module_path
@@ -52,7 +55,7 @@ class CaseDefinition(object):
         self.cases = {}
         "A dictionary of loaded cases."
         self.modules =  {}
-
+        logger.info('initialized CaseDefinition object.')
 
     def _load_case(self, name, path):
         """
@@ -72,6 +75,7 @@ class CaseDefinition(object):
             pass
         else:
             self.cases.update( { name: import_module(name, path).main } )
+            logger.debug('loaded case named "{0}"'.format(name))
 
     def _add(self, f, path=None):
         """
@@ -95,6 +99,7 @@ class CaseDefinition(object):
             path = os.path.dirname(f)
 
         self.modules.update({get_name(f): path})
+        logger.debug('added file {0} to '.format(f))
 
     def load(self):
         "Not implemented in the base class. Raises a :exc:`NotImplemented` exception"
@@ -102,7 +107,7 @@ class CaseDefinition(object):
 
     def add(self):
         "Not implemented in the base class. Raises a :exc:`NotImplemented` exception"
-        raise NotImplemented('CaseDefinition is a base class. Instantiate one of its sub-classes or implement a self().')
+        raise NotImplemented('CaseDefinition is a base class. Instantiate one of its sub-classes or implement an add().')
 
 class SingleCaseDefinition(CaseDefinition):
     """
@@ -123,6 +128,7 @@ class SingleCaseDefinition(CaseDefinition):
         A passthrough wrapper of :meth:`~core.CaseDefinition._add()`.
         """
         self._add(f, path)
+        logger.debug('adding {0} to a single-case definition instance.'.format(f))
 
     def load(self, filename):
         """
@@ -154,6 +160,7 @@ class SingleCaseDefinition(CaseDefinition):
             raise DtfDiscoveryException('case named - ' + name + ' does not exist.')
 
         sys.path.append(path)
+        logger.debug('added {0} to sys.path'.format(path))
         self.add(name, path)
         self._load_case(name, path)
 
@@ -174,11 +181,15 @@ class MultiCaseDefinition(CaseDefinition):
         :attr:`~core.CaseDefinition.case_paths` is set.
         """
 
+        logger.debug('adding cases to a multi-case definition object')
         for path in self.case_paths:
             module_path = get_module_path(path)
 
+            logger.debug('adding cases in: {0}'.format(path))
             for f in expand_tree(path, 'py'):
                 self._add(f, module_path)
+            logger.debug('added cases in: {0}'.format(path))
+        logger.debug('added all cases to a multi-case definition object.')
 
     def load(self):
         """
@@ -191,8 +202,10 @@ class MultiCaseDefinition(CaseDefinition):
         if not self.modules:
             self.add()
 
+        logger.debug('loading cases into multi-case definition object.')
         for case in self.modules:
             self._load_case(case, self.modules[case])
+        logger.debug('loaded all cases into multi-case definition object.')
 
 class TestRunner(object):
     """
@@ -222,6 +235,7 @@ class TestRunner(object):
         self.queue = []
         """A list of the :attr:`~core.TestRunner.test_specs` used to
         support parallel test running."""
+        logger.info('initialized TestRunner object.')
 
     def definitions(self, definitions):
         """
@@ -239,6 +253,7 @@ class TestRunner(object):
            t.case_definitions = CaseDefinition(['cases/'])
         """
         self.case_definition = definitions
+        logger.info('added definitions to TestRunner object')
 
     def _load(self, spec):
         """
@@ -249,7 +264,6 @@ class TestRunner(object):
         :attr:`:attr:`~core.TestRunner.queue` attributes of the
         :class:`~core.TestRunner` object.
         """
-
         with open(spec) as f:
             test = get_name(spec)
             specs = yaml.load_all(f)
@@ -257,6 +271,7 @@ class TestRunner(object):
             for spec in specs:
                 self.test_specs.update( { test: spec } )
                 self._add_to_queue(test, spec['type'])
+                logger.debug('added {0} to TestRunner test queue'.format(test))
 
     def _load_tree(self, path):
         """
@@ -267,8 +282,10 @@ class TestRunner(object):
         :meth:`~core.TestRunner._load()`.
         """
 
+        logger.debug('loading tests from tree {0} into TestRunner object'.format(path))
         for test in expand_tree(path):
             self._load(test)
+        logger.debug('loaded tests from tree {0} into TestRunner object'.format(path))
 
     def _run(self, name, func):
         """
@@ -289,7 +306,9 @@ class TestRunner(object):
         :attr:`~core.TestRunner.test_specs`, which is itself a dict
         representation of the test spec.
         """
+        logger.debug('running test {0}'.format(name))
         func(name, self.test_specs[name])
+        logger.debug('test {0} complete'.format(name))
 
     def _add_to_queue(self, name, func):
         """
@@ -349,9 +368,11 @@ class SingleTestRunner(TestRunner):
         """
 
         if test in self.test_specs:
+            logger.info('not loading test {0} because it already exists.'.format(test))
             pass
         else:
             self._load(test)
+            logger.info('added {0} to SingleTestRunner instance'.format(test))
 
     def run(self, test):
         """
@@ -366,12 +387,14 @@ class SingleTestRunner(TestRunner):
         :meth:`~core.SingleTestRunner.load()`.
         """
 
+        logger.info('trying to run {0} test.'.logger(test))
         if self.case_definition is None:
             raise DtfDiscoveryException('Definitions not added to TestRunner Object.')
         else:
             if test in self.test_specs:
                 case = self.test_specs[test]
                 self._run(test, self.case_definition.get(case['type']))
+                logger.info('completed run of test {0}'.format(test))
             else:
                 raise DtfDiscoveryException('Test Not Defined or Loaded')
 
@@ -390,11 +413,13 @@ class MultiTestRunner(TestRunner):
         :meth:`~core.TestRunner._load_tree()`, all ``.yaml`` test files within
         the specified ``path``.
         """
+        logger.info('loading test specification in {0} tree'.format(path))
         if path is None:
             for p in self.test_paths:
                 self._load_tree(p)
         else:
             self._load_tree(path)
+        logger.info('loaded all test specification in {0} tree'.format(path))
 
 class SuiteTestRunner(MultiTestRunner):
     """
@@ -423,3 +448,4 @@ class SuiteTestRunner(MultiTestRunner):
 
         for test in self.test_specs:
             self._run(test, self.case_definition.get(self.test_specs[test]['type']))
+            logger.info('ran test {0}.'.format(test))

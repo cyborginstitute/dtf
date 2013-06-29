@@ -15,6 +15,9 @@
 from __future__ import absolute_import
 
 import yaml
+import logging
+
+logger = logging.getLogger(__name__)
 
 from dtf.dtf import VERBOSE, FATAL, PASSING
 from dtf.err import DtfException, DtfTestException, DtfNotImplemented
@@ -54,6 +57,7 @@ class DtfCase(object):
         dictionary. Cases will pass a list of keys to the
         :meth:`required_keys()` method after creating the object, but
         before calling. :meth:`validate()`."""
+        logger.info('initialized DtfCase object.')
 
     def required_keys(self, keys):
         """
@@ -66,6 +70,7 @@ class DtfCase(object):
         """
         for key in keys:
             self.keys.append(key)
+        logger.info('case {0} added required keys: {0}'.format(self.name, str(keys)))
 
     def validate(self, keys=None, test_keys=None, verbose=None, fatal=None):
         """
@@ -119,9 +124,11 @@ class DtfCase(object):
                 break
 
         if t is True:
+            logger.debug('test {0} is valid'.format(self.name))
             msg = ('[%s]: "%s" is a valid "%s" test spec.'
                    % (self.name, self.test_spec['name'], self.test_spec['type']))
         elif t is False:
+            logger.debug('test {0} is not valid'.format(self.name))
             msg = ('[%s]: "%s" is not a valid "%s" test spec.'
                    % (self.name, self.test_spec['name'], self.test_spec['type']))
 
@@ -154,12 +161,15 @@ class DtfCase(object):
         :exc:`~err.DtfException`.
         """
         if keys is not None:
+            logger.debug('validating keys before dumping')
             valid = self.validate(keys, test_spec)
             if valid[0] is False:
                 raise DtfException(valid[1])
 
+        logger.info('writing test_spec to path: {0}'.format(path))
         with open(path, 'w') as f:
             f.write(yaml.dump(test_spec, default_flow_style=False))
+        logger.info('wrote test_spec to path: {0}'.format(path))
 
     def response(self, result, msg, verbose=False, fatal=False):
         """
@@ -173,6 +183,7 @@ class DtfCase(object):
         :param bool fatal: Defaults to ``False``.
         """
 
+        logger.debug('received message "{0}" from test with result status {1}'.format(msg, str(result)))
         if result is True and verbose is True:
             print(msg)
         elif result is True and verbose is False:
@@ -197,6 +208,7 @@ class DtfCase(object):
         if verbose is True:
             print(o)
 
+        logger.debug('constructed message: "{0}"'.format(msg))
         return o
 
     def passing(self):
@@ -253,6 +265,8 @@ class DtfCase(object):
            :meth:`~cases.DtfCase.test()` :data:`~dtf.VEBOSE` and
            :data:`~dtf.FATAL` as appropriate.
         """
+        logger.info('running test {0}'.format(self.name))
+
         self.validate(verbose=VERBOSE, fatal=FATAL)
 
         t = self.test()
@@ -260,3 +274,4 @@ class DtfCase(object):
         self.return_value = t[0]
 
         self.response(result=t[0], msg=t[1], verbose=VERBOSE, fatal=FATAL)
+        logger.info('completed test {0}'.format(self.name))
