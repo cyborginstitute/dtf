@@ -4,7 +4,7 @@ MAKEFLAGS += --no-print-directory
 all:tags test docs
 
 tags:
-	@find . -name "*.py" | grep -v "\.\#" | etags --output TAGS -
+	@find dtf -name "*.py" | grep -v "\.\#" | etags --output TAGS -
 	@echo [dev]: regenerated tags
 
 modsrc = buildergen
