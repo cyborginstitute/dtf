@@ -6,7 +6,7 @@ Document Test Framework (dtf)
 consistency requirements for large documentation projects, though its
 implementation may be more broadly useful. Ideally ``dtf`` will help
 facilitate easy, regular and automated testing for documentation
-source and production output, and ease the burden burden of manual
+source and production output, and ease the burden of manual
 consistency editing and checking, and help increase the quality of
 tests without increasing the workload for editors and documentation
 maintainers.
