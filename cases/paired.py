@@ -17,9 +17,7 @@
 from change import DtfChange
 import yaml
 
-# TODO make stand alone operation work with installed dtf
-from dtf.dtf import PASSING
-
+from dtf.dtf import results
 
 class DtfPaired(DtfChange):
     def test(self, a=False, b=False):
@@ -30,21 +28,17 @@ class DtfPaired(DtfChange):
             b = True
 
         if a is True and b is True:
-            msg = "[%s]: no changes" % self.name
+            msg = "no changes in '{0}' and '{0}'." 
         else:
             if a is False and b is False:
-                msg = ('[%s]: both "%s" and "%s" files changed.'
-                       % (self.name, self.test_spec['file1']['path'], self.test_spec['file0']['path']))
+                msg = 'both "{0}" and "{1}" files changed.'
             elif a is False:
-                msg = ('[%s]: "%s" changed without "%s".'
-                       % (self.name, self.test_spec['file1']['path'], self.test_spec['file0']['path']))
+                msg = '"{1}" changed without "{0}".'
             elif b is False:
-                msg = ('[%s]: only "%s" changed without "%s".'
-                       % (self.name, self.test_spec['file0']['path'], self.test_spec['file1']['path']))
+                msg = 'only "{0}" changed without "{1}".'
 
-        r = a and b
-
-        return r, msg
+                
+        return a and b, msg.format(self.test_spec['file0']['path'], self.test_spec['file1']['path'])
 
     def passing(self):
         self.test_spec['file0']['hash'] = self.hash(self.test_spec['file0']['path'])
@@ -52,11 +46,9 @@ class DtfPaired(DtfChange):
 
         return yaml.dump(self.test_spec, default_flow_style=False)
 
-
 def main(name, test_spec):
     c = DtfPaired(name, test_spec)
     c.required_keys(['file1', 'file0', 'type', 'name'])
     c.run()
 
-    if PASSING is True:
-        c.print_passing_spec()
+    results.extend(name, 'passing', c.passing())

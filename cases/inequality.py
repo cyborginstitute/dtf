@@ -18,20 +18,15 @@ from dtf.cases import DtfCase
 
 class DtfInequality(DtfCase):
     def test(self):
-        a=self.test_spec['value0']
-        b=self.test_spec['value1']
-
-        if a != b:
+        if self.test_spec['value0'] != self.test_spec['value1']:
             r = True
-            result = ('[%s]: "%s" %s successful! %s does not equal %s'
-                      % (self.name, self.test_spec['name'], 'inequality test', a, b))
+            msg = '"{0}" {1} successful! {2} does not equal {3}'
         else:
             r = False
-            result = ('[%s]: "%s" %s failed! %s equals %s'
-                      % (self.name, self.test_spec['name'], 'inequality test', a, b))
+            msg = '"{0}" {1} failed! {2} equals {3}'
 
-        return r, result
-
+        return r, msg.format(self.test_spec['name'], 'equality test', self.test_spec['value0'], self.test_spec['value1'])
+                  
 def main(name, test_spec):
     c = DtfInequality(name, test_spec)
     c.required_keys(['name', 'type', 'value0', 'value1'])

@@ -20,14 +20,12 @@ class DtfEquality(DtfCase):
     def test(self):
         if self.test_spec['value0'] == self.test_spec['value1']:
             r = True
-            msg = ('[%s]: "%s" %s successful! %s equals %s'
-                   % (self.name, self.test_spec['name'], 'equality test', self.test_spec['value0'], self.test_spec['value1']))
+            msg = '"{0}" {1} successful! {2} equals {3}.'
         else:
             r = False
-            msg = ('[%s]: "%s" %s failed! %s does not equal %s'
-                   % (self.name, self.test_spec['name'], 'equality test', self.test_spec['value0'], self.test_spec['value1']))
+            msg = '"{0}" {1} failed! {2} does not equal {3}'
 
-        return r, msg
+        return r, msg.format(self.test_spec['name'], 'equality test', self.test_spec['value0'], self.test_spec['value1'])
 
 def main(name, test_spec):
     c = DtfEquality(name, test_spec)

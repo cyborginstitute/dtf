@@ -11,6 +11,9 @@ class DtfException(Exception):
 class DtfNotImplemented(DtfException):
     pass
 
+class DtfDeprecated(DtfException):
+    pass
+
 class DtfDiscoveryException(DtfException):
     pass
 

@@ -25,7 +25,9 @@ class DtfLineLength(DtfCase):
         else:
             return False
 
-    def check_file(self, source_file, p=True):
+    def check_file(self, source_file):
+        p = True
+
         with open(source_file, 'r') as f:
             ln = 1
             for line in f.readlines():
@@ -35,21 +37,21 @@ class DtfLineLength(DtfCase):
                     break
 
         if p is False:
-            return p, ln
+            return ln
         else:
-            return p, None
+            return None
 
     def test(self):
         result = self.check_file(self.test_spec['file'])
 
-        if result[0] is True:
-            msg = ('[%s]: %s has no lines longer than %s characters.'
-                   % (self.name, self.test_spec['file'], self.test_spec['max_length']))
+        if result is None:
+            r = True 
+            msg = '{0} has no lines longer than {1} characters.'
         else:
-            msg = ('[%s]: line %s in "%s" is longer than %s characters.'
-                   % (self.name, result[1], self.test_spec['file'], self.test_spec['max_length']))
+            r = False
+            msg = 'line %s in "{0}" is longer than {1} characters.' % result
 
-        return result[0], msg
+        return result, msg.format(self.test_spec['file'], self.test_spec['max_length'])
 
 def main(name, test_spec):
     c = DtfLineLength(name, test_spec)

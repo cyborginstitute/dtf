@@ -62,3 +62,9 @@ def expand_tree(path, input_extension='yaml'):
                 file_list.append(f)
 
     return file_list
+
+def set_or_default(value, default):
+    if value is None:
+        return default
+    else:
+        return value

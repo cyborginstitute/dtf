@@ -16,10 +16,10 @@
 
 import hashlib
 import os
+import yaml
 
-# TODO make stand alone operation work with installed dtf
 from dtf.cases import DtfCase
-from dtf.dtf import PASSING
+from dtf.dtf import results
 
 class DtfChange(DtfCase):
     @staticmethod
@@ -30,18 +30,18 @@ class DtfChange(DtfCase):
                 md5.update(chunk)
         return md5.hexdigest()
 
-    def test(self, r=False):
+    def test(self):
         if self.hash(self.test_spec['file']) == self.test_spec['hash']:
             r = True
+        else:
+            r = False
 
         if r is False:
-            msg = ('[%s]: file named "%s" changed. Update other files as needed.'
-                   % ( self.test_spec['name'], self.test_spec['file']))
+            msg = 'file named "{0}" changed. Update other files as needed.'
         else:
-            msg = ('[%s]: file named "%s" is **not** changed. No further action required.'
-                   % ( self.test_spec['name'], self.test_spec['file']))
+            msg = 'file named "{0}" is **not** changed. No further action required.'
 
-        return r, msg
+        return r, msg.format(self.test_spec['file'])
 
     def passing(self):
         self.test_spec['hash'] = self.hash(self.test_spec['file'])
@@ -53,5 +53,4 @@ def main(name, test_spec):
     c.required_keys(['file', 'hash', 'type', 'name'])
     c.run()
 
-    if PASSING is True:
-        c.print_passing_spec()
+    results.extend(name, 'passing', c.passing())

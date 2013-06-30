@@ -29,12 +29,14 @@ class DtfTreeLineLength(DtfLineLength):
 
         return output
 
-    def check_directory(self, p=None):
+    def check_directory(self):
         p = True
+        failing = None
+
         for source_file in self.render_source_tree():
             result = self.check_file(source_file)
 
-            if result[0] is False:
+            if result is not None:
                 p = False
                 failing = source_file
                 break
@@ -42,23 +44,20 @@ class DtfTreeLineLength(DtfLineLength):
                 self.msg('checked line lengths in %s, which passed.' % source_file)
                 continue
 
-        if p is False:
-            return False, failing, result[1]
-        elif p is True:
-            return True, None, None
-
+        # boolean, int-or-None
+        return failing, result 
 
     def test(self):
         result = self.check_directory()
 
-        if result[0] is True:
-            msg = ('[%s]: all files in %s have no lines longer than %s characters.'
-                   % (self.name, self.test_spec['directory'], self.test_spec['max_length']))
+        if result[0] is None:
+            r = True
+            msg = 'all files in {0} have no lines longer than {1} characters.'.format(self.test_spec['directory'], self.test_spec['max_length'])
         else:
-            msg = ('[%s]: line %s in "%s" is longer than %s characters.'
-                   % (self.name, result[2], result[1], self.test_spec['max_length']))
+            r = False
+            msg = 'line {0} in "{1}" is longer than {2} characters.'.format(result[1], result[0], self.test_spec['max_length'])
 
-        return result[0], msg
+        return r, msg
 
 def main(name, test_spec):
     c = DtfTreeLineLength(name, test_spec)

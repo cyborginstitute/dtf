@@ -215,7 +215,6 @@ else:
     logger.debug('calling user interface to collect input on command line.')
     user_input = interface()
 
-
     VERBOSE = user_input.verbose
     FATAL = user_input.fatal
     PASSING = user_input.passing
@@ -253,6 +252,12 @@ else:
 
     logger.info('configuring logger. level {0}'.format(log_level))
 
+from dtf.results import DtfResults
+results = DtfResults()
+
+if MULTI == 'process':
+    results.sync = True
+
 def main():
     """
     :meth:`main()` is the main entry point for the :doc:`dtf
@@ -265,9 +270,11 @@ def main():
     if SINGLE is False:
         logger.info('running a test suite.')
         run_many(CASEDIR, TESTDIR, MULTI, JOBS)
+        results.render()
     else:
         logger.info('running {0} test with case {1}'.format(YAMLTEST, CASEDEF))
         run_one(CASEDEF, YAMLTEST)
+        results.render()
 
 if __name__ == '__main__':
     main()

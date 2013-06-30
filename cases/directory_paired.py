@@ -14,16 +14,12 @@
 # 
 # Part of the example distribution of DTF: https://pypi.python.org/pypi/dtf/
 
+
 from change import DtfChange
 import os
+import yaml
 
-# TODO make stand alone operation work with installed dtf
-try:
-    from cases import PASSING
-except ImportError:
-    import sys
-    sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "dtf")))
-    from dtf.dtf import PASSING
+from dtf.dtf import results
 
 class DtfDirectoryPaired(DtfChange):
     def test(self, a=False, b=False):
@@ -36,21 +32,16 @@ class DtfDirectoryPaired(DtfChange):
             b = True
 
         if a is True and b is True: 
-            msg = ('[%s]: number of files in "%s" and the content of "%s" has not changed.' 
-                   % (self.name, self.test_spec['directory'], self.test_spec['file']['path']))
+            msg = 'number of files in "{0}" and the content of "{1}" has not changed.'
         else: 
             if a is False and b is False: 
-                msg = ('[%s]: number of files in "%s" and the content of "%s" have changed.' 
-                       % (self.name, self.test_spec['directory'], self.test_spec['file']['path']))
+                msg = 'number of files in "{0}" and the content of "{1}" have changed.'
             elif a is False: 
-                msg = ('[%s]: content of "%s" has changed. Likely false positive.' 
-                       % (self.name, self.test_spec['file']['path']))
+                msg = 'content of "{1}" has changed in {0}. Likely false positive.' 
             elif b is False:
-                msg = ('[%s]: number of files in "%s" changed. Update "%s" now.' 
-                       % (self.name, self.test_spec['directory'], self.test_spec['file']['path']))
+                msg = 'number of files in "{0}" changed. Update "{1}" now.' 
                 
-        r = a and b
-        return r, msg        
+        return a and b, msg.format(self.test_spec['directory'], self.test_spec['file']['path'])
 
     def passing(self):
         self.test_spec['file']['hash'] = self.hash(self.test_spec['file']['path'])
@@ -63,5 +54,4 @@ def main(name, test_spec):
     c.required_keys(['directory', 'file', 'count', 'type', 'name'])
     c.run()
 
-    if PASSING is True:
-        c.print_passing_spec()
+    results.extend(name, 'passing', c.passing())
