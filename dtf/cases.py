@@ -176,7 +176,7 @@ class DtfCase(object):
         :param string message: A message to return.
 
         A helper function that returns a formated message, tagged with
-        :attr:`~cases.DtfCase.name.
+        :attr:`~cases.DtfCase.name`.
         """
 
         o = '[{0}]: {1}'.format(self.name, msg)

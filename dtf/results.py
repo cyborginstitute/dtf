@@ -39,8 +39,17 @@ class DtfResults(object):
         self.sync = False
         "When true, call :meth:`~DtfResults.response() immediately.`"
         
-
     def add(self, name, result, msg):
+        """
+        :param string name: The name of the test.
+
+        :param bool result: ``True`` if the test passed, and ``False`` if the test failed.
+
+        :param string msg: A string with a human readable note about the outcome of the test.
+
+        Adds current test results to the internal results structure.
+        """
+
         # results are a Tuple of a Boolean (pass/fail) and a message. 
 
         with self.lock:
@@ -49,10 +58,53 @@ class DtfResults(object):
         if self.sync: 
             self.response(name, result, msg)
 
+    update = extend
+    "An alias for :meth:`~results.DtfResults.extend()`."
+    
     def extend(self, name, key, value):
+        """
+        :param string name: The name of the test. Must exist
+
+        :param string key: The key of the value to add to the results dict.
+
+        :param obj value: The value of the key in the results dict.
+
+        Adds an item with key ``key`` and the value ``value`` to dictionary in
+        the ``name`` key of :attr:`~results.Dtf.Results.results`.  
+
+        If ``name`` is not already in :attr:`~results.DtfResults.results`,
+        raises :exc:`err.DtfException`.
+
+        If ``key`` exists, :meth:`~results.DtfResults.extend()` will overwrite
+        the existing value.
+        """
+
+        if name not in self.results:
+            raise DtfException('{0} must already exist in results array to extend.')
+
         self.results[name][key] = value
 
+        if key is 'passing' and self.sync:
+            self.response_spec(name, value)
+
     def response(self, name, result, msg):
+        """
+        :param string name: The name of the test.
+        
+        :param boolean result: ``True`` if the test passed. ``False`` otherwise.
+
+        :param string msg: A human readable message for the test.
+
+        Processes the ``msg`` string, and then, depending on the values of
+        :attr:`~results.DtfResults.fatal` add :attr:`~results.DtfResults.verbose` may: 
+
+        - raise :exc:`err.DtfException`, 
+
+        - do nothing, or
+
+        - print a message.
+        """
+
         text = '[{0}] {1}'.format(name, msg)
         if result is True and self.verbose is True:
             print(text)
@@ -64,11 +116,28 @@ class DtfResults(object):
             raise DtfException(text)
 
     def response_spec(self, name, data):
+        """
+        :param string name: The name of the test.
+
+        :param string data: A string with the passing yaml document.
+
+        If :attr:`~results.DtfResults.passing` is ``True``, prints the passing
+        document (i.e. ``data``) for ``name`` .
+        """
+
         if self.passing:
             print("# passing document for: {0}.yaml".format(name))
             print('{0}...'.format(data))
 
     def render(self):
+        """
+        Calls :meth:`~results.DtfResults.response()` and
+        :meth:`~results.DtfResults.response_spec()` (as needed) for every result
+        in :attr:`~results.DtfResults.results`.
+        """
+
+        
+
         for k, v in self.results.iteritems():
             self.response(k, v['status'], v['msg'])
         

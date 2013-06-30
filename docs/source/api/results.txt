@@ -1,0 +1,7 @@
+================================================
+:mod:`results` -- Test Reporting and Information
+================================================
+
+.. automodule:: results
+   :members:
+   :private-members:
