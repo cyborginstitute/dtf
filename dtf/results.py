@@ -136,8 +136,6 @@ class DtfResults(object):
         in :attr:`~results.DtfResults.results`.
         """
 
-        
-
         for k, v in self.results.iteritems():
             self.response(k, v['status'], v['msg'])
         
