@@ -58,9 +58,6 @@ class DtfResults(object):
         if self.sync: 
             self.response(name, result, msg)
 
-    update = extend
-    "An alias for :meth:`~results.DtfResults.extend()`."
-    
     def extend(self, name, key, value):
         """
         :param string name: The name of the test. Must exist
@@ -86,6 +83,9 @@ class DtfResults(object):
 
         if key is 'passing' and self.sync:
             self.response_spec(name, value)
+
+    update = extend
+    "An alias for :meth:`~results.DtfResults.extend()`."
 
     def response(self, name, result, msg):
         """
